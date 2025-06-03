@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UltimateFootballSystem.TacticsEngine.Core.Types;
+
+namespace UltimateFootballSystem.TacticsEngine.Core
+{
+    /// <summary>
+    /// Represents a team with players and tactics
+    /// </summary>
+    public class Team
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<Types.Player> Players { get; } = new List<Types.Player>();
+        public List<Tactic> Tactics { get; } = new List<Tactic>();
+        public Tactic ActiveTactic { get; private set; }
+
+        public Team(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
+        // Add a player to the team
+        public void AddPlayer(Types.Player player)
+        {
+            Players.Add(player);
+        }
+
+        // Add a tactic to the team
+        public void AddTactic(Tactic tactic)
+        {
+            Tactics.Add(tactic);
+
+            // Set as active if it's the first tactic
+            if (ActiveTactic == null)
+            {
+                ActiveTactic = tactic;
+            }
+        }
+
+        // Set the active tactic
+        public void SetActiveTactic(Tactic tactic)
+        {
+            if (Tactics.Contains(tactic))
+            {
+                ActiveTactic = tactic;
+            }
+        }
+
+        // Get a player by Id
+        public Types.Player GetPlayer(int id)
+        {
+            return Players.FirstOrDefault(p => p.Id == id);
+        }
+    }
+}
