@@ -4346,8 +4346,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _flexBasis:
-    _mode: 4
-    _value: 0
+    _mode: 1
+    _value: 100
   _cssWidth:
     mode: 2
     value: 0
