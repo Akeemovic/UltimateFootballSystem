@@ -1,8 +1,9 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.ListSections
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class ReservesListSection : MonoBehaviour
     {
@@ -10,7 +11,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.ListSectio
 
         [SerializeField] public ScrollRect scrollRect;
     
-        [SerializeField] public ListSectionType SectionType;
+        public ListSectionType sectionType;
 
         [SerializeField] public Transform viewsContainer;
     

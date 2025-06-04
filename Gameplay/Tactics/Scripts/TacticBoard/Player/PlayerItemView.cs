@@ -2,11 +2,12 @@ using System;
 using System.Linq;
 using UltimateFootballSystem.Core.TacticsEngine;
 using UltimateFootballSystem.Core.TacticsEngine.Utils;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Drag_and_Drop_Support;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Options;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     /// <summary>
     /// Player Profile View.
@@ -28,7 +29,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
         public PlayerItemViewOwnerOption ViewOwnerOption;
     
         /// <summary>
-        /// Parent Zone view.
+        /// Parent Zone tacticsPitch.
         /// </summary>
         [NonSerialized]
         public PositionZoneView ParentPositionZoneView;
@@ -160,7 +161,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
                 {
                     TacticalPosition.AssignedPlayerId = Profile.Id;
                 }
-                Debug.Log("SetPlayerData: Data reaching profile view belongs to: " + Profile.Name);
+                Debug.Log("SetPlayerData: Data reaching profile tacticsPitch belongs to: " + Profile.Name);
             }
             else
             {
@@ -170,7 +171,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
                     TacticalPosition.AssignedPlayerId = null;
                 }
                 Profile = new Core.Entities.Player();
-                Debug.Log("SetPlayerData: Data reaching profile view is null: ");
+                Debug.Log("SetPlayerData: Data reaching profile tacticsPitch is null: ");
             }
         
             // Performs player/position mapping updates 
@@ -191,6 +192,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
                     if(mainView.isActiveAndEnabled) mainView.Hide();
                     if(!placeholderView.isActiveAndEnabled) placeholderView.Show();
                 }
+                OnFormationStatusChanged?.Invoke(true);
             }
         
             mainView.UpdateView();

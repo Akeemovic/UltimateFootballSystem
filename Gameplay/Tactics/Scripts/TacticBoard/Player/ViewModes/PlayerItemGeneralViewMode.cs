@@ -1,9 +1,10 @@
 ﻿using TMPro;
 using UltimateFootballSystem.Common.Scripts.Utils;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PlayerItemGeneralViewMode : MonoBehaviour, IPlayerItemViewMode
     {
@@ -12,7 +13,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Vie
         [SerializeField] private GameObject rightContainer;
     
         /// <summary>
-        /// Player image view.
+        /// Player image tacticsPitch.
         /// </summary>
         [SerializeField]
         private Image ShirtImage;
@@ -24,36 +25,36 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Vie
         private Color ShirtTextColor;
     
         /// <summary>
-        /// SquadNumber view.
+        /// SquadNumber tacticsPitch.
         /// </summary>
         public TextMeshProUGUI NumberText;
     
         /// <summary>
-        /// Condition Image view.
+        /// Condition Image tacticsPitch.
         /// </summary>
         [SerializeField]
         public Image ConditionImage;
     
         /// <summary>
-        /// Condition Text view.
+        /// Condition Text tacticsPitch.
         /// </summary>
         [SerializeField]
         public TextMeshProUGUI ConditionText;
     
         /// <summary>
-        /// Match Fitness Image view.
+        /// Match Fitness Image tacticsPitch.
         /// </summary>
         [SerializeField]
         public Image MatchFitnessImage;
     
         /// <summary>
-        /// Match Fitness Text view.
+        /// Match Fitness Text tacticsPitch.
         /// </summary>
         [SerializeField]
         public TextMeshProUGUI MatchFitnessText;
     
         /// <summary>
-        /// Morale view.
+        /// Morale tacticsPitch.
         /// </summary>
         [SerializeField]
         public Image MoraleImageView;

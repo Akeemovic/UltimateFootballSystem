@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Common.Widgets.StarRating
+namespace UltimateFootballSystem.Gameplay.Common.Widgets
 {
     public class StarRatingView : MonoBehaviour 
     {

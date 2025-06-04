@@ -10,8 +10,8 @@ namespace UltimateFootballSystem.Core.TacticsEngine.Types
         public int Id { get; set; }
         public string Name { get; set; }
         public List<PositionData> Positions { get; set; } = new List<PositionData>();
-        public List<int> Substitutes { get; set; } // Players' Ids
-        public List<int> Reserves { get; set; } // Players' Ids
+        public List<int?> Substitutes { get; set; } // Players' Ids
+        public List<int?> Reserves { get; set; } // Players' Ids
     }
 
     /// <summary>

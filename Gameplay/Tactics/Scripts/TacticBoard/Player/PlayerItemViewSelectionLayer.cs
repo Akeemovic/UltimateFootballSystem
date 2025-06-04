@@ -1,10 +1,8 @@
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Options;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes.Options;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PlayerItemViewSelectionLayer : Selectable, IPointerClickHandler, IBeginDragHandler, IEndDragHandler
     {
@@ -97,7 +95,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
         {
             if (playerItemView.mainView.ViewMode == PlayerItemViewModeOption.Roles)
             {
-                var dialog = playerItemView.Controller.RoleSelectorDialog.Clone();
+                var dialog = playerItemView.Controller.roleSelectorDialog.Clone();
                 dialog.Show();
                 Debug.Log("dialog", dialog);
             }

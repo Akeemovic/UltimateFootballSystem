@@ -1,8 +1,9 @@
 using NinjaTools.FlexBuilder;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PositionZonesContainerView : MonoBehaviour
     {
@@ -41,12 +42,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
         {
 
         
-            // foreach (PositionZoneView view in ZoneViews)
+            // foreach (PositionZoneView tacticsPitch in ZoneViews)
             // {
-            //     // Debug.Log(view.gameObject.name);
-            //     // Debug.Log(view.childPlayerItemView);
+            //     // Debug.Log(tacticsPitch.gameObject.name);
+            //     // Debug.Log(tacticsPitch.childPlayerItemView);
             //     
-            //     // Debug.Log(view.childPlayerItemView.gameObject.name);
+            //     // Debug.Log(tacticsPitch.childPlayerItemView.gameObject.name);
             // }
         }
 

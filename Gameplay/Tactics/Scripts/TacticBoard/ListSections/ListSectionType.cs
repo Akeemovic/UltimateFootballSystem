@@ -1,5 +1,5 @@
 ﻿
-    namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.ListSections
+    namespace UltimateFootballSystem.Gameplay.Tactics
     {
         public enum ListSectionType
         {

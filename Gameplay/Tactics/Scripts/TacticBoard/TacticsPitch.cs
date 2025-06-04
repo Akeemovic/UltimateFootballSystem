@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes.Options;
 using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class TacticsPitch : MonoBehaviour
     {

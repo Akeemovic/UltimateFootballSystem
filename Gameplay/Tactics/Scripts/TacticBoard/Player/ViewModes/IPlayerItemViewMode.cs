@@ -1,4 +1,4 @@
-﻿namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes
+﻿namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public interface IPlayerItemViewMode
     {

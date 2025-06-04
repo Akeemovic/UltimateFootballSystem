@@ -5,76 +5,71 @@ using UltimateFootballSystem.Core.Entities;
 using UltimateFootballSystem.Core.TacticsEngine;
 using UltimateFootballSystem.Core.TacticsEngine.Utils;
 using UltimateFootballSystem.Core.Utils;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Compositions;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.ListSections;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Options;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes.Options;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UnityEngine;
 using UnityEngine.Serialization;
+using FormationsPositions = UltimateFootballSystem.Core.TacticsEngine.Utils.FormationsPositions;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class TacticsBoardController : MonoBehaviour
     {
         public Canvas canvas;
     
         [HideInInspector]
-        public PlayerItemView DragInfoView;
+        public PlayerItemView dragInfoView;
     
         [SerializeField] 
         public Transform playerItemViewPrefab;
     
-        public TacticsPitch View;
+        public TacticsPitch tacticsPitch;
 
         [HideInInspector] 
         public PositionZonesContainerView[] zoneContainerViews = new PositionZonesContainerView[6];
     
-        [FormerlySerializedAs("benchListSection")] [SerializeField] 
+        [SerializeField] 
         public ListSection substitutesListSection;
     
         [SerializeField] 
         public ListSection reserveListSection;
     
         // [SerializeField]
-        public PlayerItemView[] StartingPlayersViews = new PlayerItemView[24];
+        public PlayerItemView[] startingPlayersViews = new PlayerItemView[24];
     
         // [SerializeField]
-        // protected PlayerItemView[] SubstitutesPlayersViews = new PlayerItemView[7];
-        [FormerlySerializedAs("BenchPlayersViews")] public PlayerItemView[] SubstitutesPlayersViews;
+        public PlayerItemView[] substitutesPlayersViews;
     
         // [SerializeField]
-        // protected PlayerItemView[] ReservePlayersViews = new PlayerItemView[7];
-        public PlayerItemView[] ReservePlayersViews;
+        public PlayerItemView[] reservePlayersViews;
 
         [SerializeField] 
-        public Dialog RoleSelectorDialog;
+        public Dialog roleSelectorDialog;
     
-        public PlayerDataManager playerDataManager;
+        public PlayerDataManager PlayerDataManager;
         public int teamId = 419;
 
         // Mapping tactical positions to player IDs
-        public Dictionary<TacticalPositionOption, int?> startingPositionIdMapping;
-        public List<int?> benchPlayersIds;
+        public Dictionary<TacticalPositionOption, int?> StartingPositionIdMapping;
+        public List<int?> BenchPlayersIds;
         public List<int> reservePlayersIds;
 
         // Populated based on player data from PlayerDataManager
-        public Dictionary<TacticalPositionOption, Core.Entities.Player?> startingPositionPlayerMapping;
-        public ObservableList<Core.Entities.Player> substitutesPlayersItems;
-        public ObservableList<Core.Entities.Player> reservePlayersItems;
+        public Dictionary<TacticalPositionOption, Core.Entities.Player?> StartingPositionPlayerMapping;
+        public ObservableList<Core.Entities.Player> SubstitutesPlayersItems;
+        public ObservableList<Core.Entities.Player> ReservePlayersItems;
 
 
         private bool _isFirstLoad = true;
 
-        [SerializeField]
-        private bool AutosaveApply = true;
+        [SerializeField] private bool autosaveApply = true;
 
-        public int AllowedSubstitutes = 9;
+        public int allowedSubstitutes = 9;
     
         // public static TacticsBoardController Instance;
 
-        public PlayerItemManager PlayerItemManager;
-        public FormationManager FormationManager;
+        public BoardPlayerItemManager BoardPlayerItemManager;
+        private BoardTacticManager boardTacticManager;
 
         private Team _team;
     
@@ -89,7 +84,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
             //     Destroy(gameObject);
             // }
 
-            if (View == null)
+            if (tacticsPitch == null)
             {
                 Debug.LogError("TacticsPitch is not set. Please assign it in the inspector.");
             }
@@ -116,102 +111,106 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
         
             Debug.Log("Active positions count" + _team.ActiveTactic.ActivePositions.Count);
         
-            startingPositionPlayerMapping = new Dictionary<TacticalPositionOption, Core.Entities.Player?>();
-            substitutesPlayersItems = new ObservableList<Core.Entities.Player>();
-            reservePlayersItems = new ObservableList<Core.Entities.Player>();
+            StartingPositionPlayerMapping = new Dictionary<TacticalPositionOption, Core.Entities.Player?>();
+            SubstitutesPlayersItems = new ObservableList<Core.Entities.Player>();
+            ReservePlayersItems = new ObservableList<Core.Entities.Player>();
         
             var canvas = FindObjectOfType<Canvas>();
-            DragInfoView =
+            dragInfoView =
                 Instantiate(playerItemViewPrefab, canvas.gameObject.transform).GetComponent<PlayerItemView>();
-            DragInfoView.ViewOwnerOption = PlayerItemViewOwnerOption.DragAndDrop;
+            dragInfoView.ViewOwnerOption = PlayerItemViewOwnerOption.DragAndDrop;
             // DragInfoView.GetComponent<PlayerItemDragSupport>().Controller = this;
             // DragInfoView.GetComponent<PlayerItemDropSupport>().Controller = this;
-            DragInfoView.Controller = this;
-            DragInfoView.gameObject.SetActive(false);
+            dragInfoView.Controller = this;
+            dragInfoView.gameObject.SetActive(false);
         
-            zoneContainerViews = View.zoneContainerViews;
+            zoneContainerViews = tacticsPitch.zoneContainerViews;
         
         
             Debug.Log("zoneContainerViews count" + zoneContainerViews.Length);
 
-            PlayerItemManager = new PlayerItemManager(this);
-            FormationManager = new FormationManager(this);
+            BoardPlayerItemManager = new BoardPlayerItemManager(this);
+            boardTacticManager = new BoardTacticManager(this);
         }
 
         private void Start()
         {
-           
             InitData();
             InitViews();
 
             RegisterDropdownListeners();
         
-            substitutesPlayersItems.OnCollectionChange += () =>
+            SubstitutesPlayersItems.OnCollectionChange += () =>
             {
-                substitutesListSection.UpdateFormattedHeaderText(substitutesPlayersItems.Count.ToString());
-                Debug.Log("Substitutes Count: " + substitutesPlayersItems.Count + "*** Players: " + string.Join(" ", substitutesPlayersItems.Where(item => item != null).Select(item => item.Id)));
+                substitutesListSection.UpdateFormattedHeaderText(SubstitutesPlayersItems.Count.ToString());
+                Debug.Log("Substitutes Count: " + SubstitutesPlayersItems.Count + "*** Players: " + string.Join(" ", SubstitutesPlayersItems.Where(item => item != null).Select(item => item.Id)));
             };
 
-            reservePlayersItems.OnCollectionChange += () =>
+            ReservePlayersItems.OnCollectionChange += () =>
             {
-                reserveListSection.UpdateFormattedHeaderText(reservePlayersItems.Count.ToString());
-                Debug.Log("Reserves Count: " + reservePlayersItems.Count + "*** Players: " + string.Join(" ", reservePlayersItems.Where(item => item != null).Select(item => item.Id)));
+                reserveListSection.UpdateFormattedHeaderText(ReservePlayersItems.Count.ToString());
+                Debug.Log("Reserves Count: " + ReservePlayersItems.Count + "*** Players: " + string.Join(" ", ReservePlayersItems.Where(item => item != null).Select(item => item.Id)));
             };
         }
     
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                boardTacticManager.SaveTacticWithTimestamp();
+            }
+            
             if (Input.GetKeyDown(KeyCode.C))
             {
-                FormationManager.ClearSelection();
+                // BoardTacticManager.ClearSelection();
             }
         
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    FormationManager.SetFormationViews(FormationsPositions.F442);
-                    LoadPlayersAutofill(startingPositionPlayerMapping.Values);
+                    boardTacticManager.SetFormationViews(FormationsPositions.F442);
+                    LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    FormationManager.SetFormationViews(FormationsPositions.F433_DM_Wide);
-                    LoadPlayersAutofill(startingPositionPlayerMapping.Values);
+                    boardTacticManager.SetFormationViews(FormationsPositions.F433_DM_Wide);
+                    LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    FormationManager.SetFormationViews(FormationsPositions.F4141);
-                    LoadPlayersAutofill(startingPositionPlayerMapping.Values);
+                    boardTacticManager.SetFormationViews(FormationsPositions.F4141);
+                    LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    FormationManager.SetFormationViews(FormationsPositions.F4231_Wide);
-                    LoadPlayersAutofill(startingPositionPlayerMapping.Values);
+                    boardTacticManager.SetFormationViews(FormationsPositions.F4231_Wide);
+                    LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    FormationManager.SetFormationViews(FormationsPositions.F3232_352);
-                    LoadPlayersAutofill(startingPositionPlayerMapping.Values);
+                    boardTacticManager.SetFormationViews(FormationsPositions.F3232_352);
+                    LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    FormationManager.SetFormationViews(FormationsPositions.F343);
-                    LoadPlayersAutofill(startingPositionPlayerMapping.Values);
+                    boardTacticManager.SetFormationViews(FormationsPositions.F343);
+                    LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
                 }
             }
         }
@@ -249,10 +248,10 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
             Debug.Log("Active positions count" + _team.ActiveTactic.ActivePositions.Count);
         
             // Initialize the mapping dictionary
-            startingPositionPlayerMapping = new Dictionary<TacticalPositionOption, Core.Entities.Player?>();
+            StartingPositionPlayerMapping = new Dictionary<TacticalPositionOption, Core.Entities.Player?>();
 
             // Example bench player IDs (these would come from your PlayerDataManager in a real scenario)
-            benchPlayersIds = _team.ActiveTactic.Substitutes;
+            BenchPlayersIds = _team.ActiveTactic.Substitutes;
 
             // Step 1: Get the current squad from the PlayerDataManager
             List<Core.Entities.Player> currentSquad = _team.Players
@@ -279,7 +278,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                 // Find the player profile with matching Id or set to null if not found
                 // var playerProfile = currentSquad.FirstOrDefault(p => p.Id == playerId);
                 var playerProfile = currentSquad.FirstOrDefault(p => p.Id == playerId);
-                startingPositionPlayerMapping[posOption] = playerProfile;
+                StartingPositionPlayerMapping[posOption] = playerProfile;
             }
 
             // Log the startingPositionPlayerMapping
@@ -290,44 +289,44 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
             //     Debug.Log($"{kvp.Key}: {playerId}");
             // }
         
-            substitutesPlayersItems.Clear();
-            reservePlayersItems.Clear();
+            SubstitutesPlayersItems.Clear();
+            ReservePlayersItems.Clear();
 
             int benchCount = 0;
 
             // Distribute bench players according to the AllowedSubstitutes limit
-            for (int i = 0; i < benchPlayersIds.Count; i++)
+            for (int i = 0; i < BenchPlayersIds.Count; i++)
             {
-                var playerId = benchPlayersIds[i];
+                var playerId = BenchPlayersIds[i];
                 var playerProfile = currentSquad.FirstOrDefault(p => p.Id == playerId);
     
                 if (playerProfile != null)
                 {
-                    if (benchCount < AllowedSubstitutes)
+                    if (benchCount < allowedSubstitutes)
                     {
                         // Add to bench until the AllowedSubstitutes limit is reached
-                        substitutesPlayersItems.Add(playerProfile);
+                        SubstitutesPlayersItems.Add(playerProfile);
                         benchCount++;
                     }
                     else
                     {
                         // Once bench is full, add remaining players to reserves
-                        reservePlayersItems.Add(playerProfile);
+                        ReservePlayersItems.Add(playerProfile);
                     }
                 }
             
-                Debug.Log("bench player count: " + substitutesPlayersItems.Count);
-                Debug.Log("bench players: " + string.Join(", ", substitutesPlayersItems.Select(player => player.Name)));
+                Debug.Log("bench player count: " + SubstitutesPlayersItems.Count);
+                Debug.Log("bench players: " + string.Join(", ", SubstitutesPlayersItems.Select(player => player.Name)));
             }
 
             // Add any remaining players who aren't in startingPositionPlayerMapping, substitutesPlayersItems, or reservePlayersItems to reserves
             foreach (var player in currentSquad)
             {
-                if (!startingPositionPlayerMapping.ContainsValue(player) &&
-                    !substitutesPlayersItems.Contains(player) &&
-                    !reservePlayersItems.Contains(player))
+                if (!StartingPositionPlayerMapping.ContainsValue(player) &&
+                    !SubstitutesPlayersItems.Contains(player) &&
+                    !ReservePlayersItems.Contains(player))
                 {
-                    reservePlayersItems.Add(player);
+                    ReservePlayersItems.Add(player);
                 }
             }
 
@@ -340,10 +339,10 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
 
             // Set formation views based on starting positions mappings,
             // the Keys are TacticalPositions (representing the formation)
-            FormationManager.SetFormationViews(startingPositionPlayerMapping.Keys.ToArray(), initCall: true);
+            boardTacticManager.SetFormationViews(StartingPositionPlayerMapping.Keys.ToArray(), initCall: true);
 
             // Load players into the board
-            LoadPlayers(startingPositionPlayerMapping);
+            LoadPlayers(StartingPositionPlayerMapping);
         }
 
     
@@ -356,15 +355,16 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                 var zoneViews = zoneContainer.GetComponentsInChildren<PositionZoneView>(true);
                 foreach (var zoneView in zoneViews)
                 {
-                    if (index < StartingPlayersViews.Length)
+                    if (index < startingPlayersViews.Length)
                     {
                         var playerItemView = zoneView.GetComponentInChildren<PlayerItemView>(true);
                         if (playerItemView != null)
                         {
-                            StartingPlayersViews[index] = playerItemView;
-                            // Debug.Log($"Starting player view assigned at index {index}");
+                            startingPlayersViews[index] = playerItemView;
+                            // Debug.Log($"Starting player tacticsPitch assigned at index {index}");
                         
-                            // playerItemView.OnFormationStatusChanged += HandleFormationStatusChanged;
+                            // Register for formation status changes
+                            playerItemView.OnFormationStatusChanged += boardTacticManager.HandleFormationStatusChanged;
                             playerItemView.Controller = this;   
                             playerItemView.ParentPositionZoneView = zoneView;
                             playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.StartingList;
@@ -392,9 +392,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                 }
             }
 
-            for (int i = 0; i < StartingPlayersViews.Length; i++)
+            for (int i = 0; i < startingPlayersViews.Length; i++)
             {
-                if (StartingPlayersViews[i] == null)
+                if (startingPlayersViews[i] == null)
                 {
                     Debug.LogError($"StartingPlayersViews[{i}] is not initialized.");
                 }
@@ -409,7 +409,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                 // Get all zone views (positions) within the current container
                 var zoneViews = zoneContainer.GetComponentsInChildren<PositionZoneView>(true);
         
-                // Loop through each zone view to find matching tactical positions
+                // Loop through each zone tacticsPitch to find matching tactical positions
                 foreach (var zoneView in zoneViews)
                 {
                     // Check if the zone is in use for the formation
@@ -420,9 +420,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                         // Find player, set whatever is return, even nulls
                         if (startingPositionPlayersMapping.TryGetValue(zoneView.tacticalPositionOption, out var player))
                         {
-                            // Debug.Log($"LoadPlayers: Setting player {player.Name} in zone view {zoneView.name}.");
+                            // Debug.Log($"LoadPlayers: Setting player {player.Name} in zone tacticsPitch {zoneView.name}.");
                     
-                            // Set the player data in the zone's child player item view
+                            // Set the player data in the zone's child player item tacticsPitch
                             zoneView.childPlayerItemView.SetPlayerData(player);
                         }
                         else
@@ -432,7 +432,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                     }
                     else
                     {
-                        // Debug.Log($"LoadPlayers: Zone view {zoneView.name} is not in use for formation.");
+                        // Debug.Log($"LoadPlayers: Zone tacticsPitch {zoneView.name} is not in use for formation.");
                     }
                 }
             }
@@ -448,7 +448,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
             foreach (var zoneContainer in zoneContainerViews)
             {
                 var zoneViews = zoneContainer.GetComponentsInChildren<PositionZoneView>(true);
-                // Loop through each zone view and assign players or set to null if not in use
+                // Loop through each zone tacticsPitch and assign players or set to null if not in use
                 foreach (var zoneView in zoneViews)
                 {
                     if (zoneView.InUseForFormation && playerIndex < players.Count())
@@ -457,12 +457,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                 
                         if (player != null)
                         {
-                            Debug.Log($"LoadPlayersAutofill: Setting player {player.Name} in zone view {zoneView.name}.");
+                            Debug.Log($"LoadPlayersAutofill: Setting player {player.Name} in zone tacticsPitch {zoneView.name}.");
                             zoneView.childPlayerItemView.SetPlayerData(player);
                         }
                         else
                         {
-                            Debug.Log($"LoadPlayersAutofill: No player to assign to zone view {zoneView.name}, setting data to null.");
+                            Debug.Log($"LoadPlayersAutofill: No player to assign to zone tacticsPitch {zoneView.name}, setting data to null.");
                             zoneView.childPlayerItemView.SetPlayerData(null);
                         }
 
@@ -470,7 +470,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                     }
                     else
                     {
-                        Debug.Log($"LoadPlayersAutofill: Zone view {zoneView.name} is not in use for formation, setting data to null.");
+                        Debug.Log($"LoadPlayersAutofill: Zone tacticsPitch {zoneView.name} is not in use for formation, setting data to null.");
                         zoneView.childPlayerItemView.SetPlayerData(null);
                     }
                 }
@@ -487,9 +487,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
             }
 
             // Initialize the SubstitutesPlayersViews array with the size of AllowedSubstitutes
-            SubstitutesPlayersViews = new PlayerItemView[AllowedSubstitutes];
+            substitutesPlayersViews = new PlayerItemView[allowedSubstitutes];
 
-            for (int i = 0; i < SubstitutesPlayersViews.Length; i++)
+            for (int i = 0; i < substitutesPlayersViews.Length; i++)
             {
                 // Instantiate a new PlayerItemView (assuming you have a prefab for PlayerItemView)
                 GameObject playerItemViewObject = Instantiate(playerItemViewPrefab.gameObject, substitutesListSection.viewsContainer);
@@ -497,19 +497,21 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
             
                 playerItemView.Controller = this;
                 playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.BenchList;
-                if (i < substitutesPlayersItems.Count && substitutesPlayersItems[i] != null)
+                // Register for formation status changes
+                playerItemView.OnFormationStatusChanged += boardTacticManager.HandleFormationStatusChanged;
+                if (i < SubstitutesPlayersItems.Count && SubstitutesPlayersItems[i] != null)
                 {
-                    // Set data for the player profile view if the item exists
-                    playerItemView.SetPlayerData(substitutesPlayersItems[i]);
+                    // Set data for the player profile tacticsPitch if the item exists
+                    playerItemView.SetPlayerData(SubstitutesPlayersItems[i]);
                 }
                 else
                 {
-                    // Show placeholder and hide the main view if the player item is null or out of range
+                    // Show placeholder and hide the main tacticsPitch if the player item is null or out of range
                     playerItemView.placeholderView.Show();
                     playerItemView.mainView.Hide();
                 }
                 playerItemView.BenchPlayersListIndex = i;
-                SubstitutesPlayersViews[i] = playerItemView;
+                substitutesPlayersViews[i] = playerItemView;
                 playerItemView.placeholderView.UpdatePositionText();
                 
                 // Logging to verify correct initialization
@@ -517,14 +519,14 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                 Debug.Log($"Substitutes player {playerName} initialized at index {i}");
             }
     
-            if (AllowedSubstitutes <= 9)
+            if (allowedSubstitutes <= 9)
             {
                 substitutesListSection.DisableScroll();
             }
         
             // substitutesListSection.SetHeaderText($"Substitutes ({substitutesPlayersItems.Count}/{AllowedSubstitutes})");
-            substitutesListSection.SetHeaderTextFormat("{0} ({1}/"+ AllowedSubstitutes +")", "Substitutes");
-            substitutesListSection.UpdateFormattedHeaderText(substitutesPlayersItems.Count.ToString());
+            substitutesListSection.SetHeaderTextFormat("{0} ({1}/"+ allowedSubstitutes +")", "Substitutes");
+            substitutesListSection.UpdateFormattedHeaderText(SubstitutesPlayersItems.Count.ToString());
         }
     
         public void InitializeReservePlayers()
@@ -535,9 +537,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                 Destroy(child.gameObject);
             }
 
-            ReservePlayersViews = new PlayerItemView[reservePlayersItems.Count];
+            reservePlayersViews = new PlayerItemView[ReservePlayersItems.Count];
 
-            for (int i = 0; i < reservePlayersItems.Count; i++)
+            for (int i = 0; i < ReservePlayersItems.Count; i++)
             {
                 // Instantiate a new PlayerItemView (assuming you have a prefab for PlayerItemView)
                 GameObject playerItemViewObject = Instantiate(playerItemViewPrefab.gameObject, reserveListSection.viewsContainer); // Changed from benchContainerView to reserveContainerView
@@ -545,33 +547,33 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
 
                 playerItemView.Controller = this;
                 playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.ReserveList;
-                // Set data for the player profile view
-                playerItemView.SetPlayerData(reservePlayersItems[i]);
+                // Set data for the player profile tacticsPitch
+                playerItemView.SetPlayerData(ReservePlayersItems[i]);
                 playerItemView.ReservePlayersListIndex = i;
-                ReservePlayersViews[i] = playerItemView;
+                reservePlayersViews[i] = playerItemView;
 
                 Debug.Log($"Reserve player {playerItemView.Profile.Name} initialized at index {i}");
             }
         
             // reserveListSection.SetHeaderText("Reserves (" + reservePlayersItems.Count + ")");
             reserveListSection.SetHeaderTextFormat("{0} ({1})", "Reserves");
-            reserveListSection.UpdateFormattedHeaderText(reservePlayersItems.Count.ToString());
+            reserveListSection.UpdateFormattedHeaderText(ReservePlayersItems.Count.ToString());
         }
         #endregion
     
         public void RegisterDropdownListeners()
         {
-            View.viewModesDropDown.onValueChanged.AddListener((int selectedIndex) =>
+            tacticsPitch.viewModesDropDown.onValueChanged.AddListener((int selectedIndex) =>
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    // Handle the view mode change based on the selected index
+                    // Handle the tacticsPitch mode change based on the selected index
                     PlayerItemViewModeOption selectedMode = (PlayerItemViewModeOption)selectedIndex;
 
                     // Implement your logic for the selected mode
                     Debug.Log("Selected View Mode: " + selectedMode);
 
-                    foreach (var itemView in StartingPlayersViews)
+                    foreach (var itemView in startingPlayersViews)
                     {
                         itemView.mainView.ViewMode = selectedMode;
                     }
@@ -579,13 +581,13 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
                     // No Tactical Roles for substitutes and reserve players
                     if (selectedMode == PlayerItemViewModeOption.Roles) return;
                     {
-                        // Continue to perform change for other view modes
-                        foreach (var itemView in SubstitutesPlayersViews)
+                        // Continue to perform change for other tacticsPitch modes
+                        foreach (var itemView in substitutesPlayersViews)
                         {
                             itemView.mainView.ViewMode = selectedMode;
                         }
 
-                        foreach (var itemView in ReservePlayersViews)
+                        foreach (var itemView in reservePlayersViews)
                         {
                             itemView.mainView.ViewMode = selectedMode;
                         }
@@ -596,11 +598,20 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
 
         public void OnDisable()
         {
-            foreach (var playerItemView in StartingPlayersViews)
+            foreach (var playerItemView in startingPlayersViews)
             {
                 if (playerItemView != null)
                 {
-                    playerItemView.OnFormationStatusChanged -= FormationManager.HandleFormationStatusChanged;
+                    playerItemView.OnFormationStatusChanged -= boardTacticManager.HandleFormationStatusChanged;
+                    Debug.Log($"Unsubscribed from {playerItemView.gameObject.name} OnFormationStatusChanged");
+                }
+            }
+            
+            foreach (var playerItemView in substitutesPlayersViews)
+            {
+                if (playerItemView != null)
+                {
+                    playerItemView.OnFormationStatusChanged -= boardTacticManager.HandleFormationStatusChanged;
                     Debug.Log($"Unsubscribed from {playerItemView.gameObject.name} OnFormationStatusChanged");
                 }
             }

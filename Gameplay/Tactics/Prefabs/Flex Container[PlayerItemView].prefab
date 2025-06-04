@@ -5866,8 +5866,8 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 6859741980664095624}
   playerItemView: {fileID: 3422317845766635638}
-  selectAudioClip: {fileID: 8300000, guid: 56cd983efe185224f89f88363babead5, type: 3}
-  clickAudioClip: {fileID: 8300000, guid: 1f8c48445348ab044a8b39c9cf4c31cb, type: 3}
+  selectAudioClip: {fileID: 8300000, guid: 7e1edf546646c4749bb4830dd4264367, type: 3}
+  clickAudioClip: {fileID: 8300000, guid: 9074a77a1a42df340800aea2c7c7c951, type: 3}
 --- !u!82 &3498109586441105582
 AudioSource:
   m_ObjectHideFlags: 0

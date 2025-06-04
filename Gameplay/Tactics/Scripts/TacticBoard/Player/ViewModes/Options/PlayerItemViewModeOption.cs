@@ -1,4 +1,4 @@
-﻿namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes.Options
+﻿namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public enum PlayerItemViewModeOption
     {

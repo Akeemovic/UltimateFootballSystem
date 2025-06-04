@@ -1,9 +1,8 @@
 using TMPro;
 using UltimateFootballSystem.Core.TacticsEngine;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Options;
 using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PlayerItemViewPlaceholder : MonoBehaviour
     {

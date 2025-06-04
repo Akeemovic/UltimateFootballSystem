@@ -1,8 +1,8 @@
 using UltimateFootballSystem.Core.TacticsEngine;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PositionZoneView : MonoBehaviour
     {

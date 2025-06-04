@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.ListSections
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class ListSection : MonoBehaviour
     {

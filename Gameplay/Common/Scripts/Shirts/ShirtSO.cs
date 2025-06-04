@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Common.Scripts.Shirts
+namespace UltimateFootballSystem.Gameplay.Common
 {
     [CreateAssetMenu(menuName = "Actionmatic/UPF/ShirtSO", fileName = "NewShirtSO")]
     public class ShirtSO : ScriptableObject

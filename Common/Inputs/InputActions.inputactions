@@ -880,6 +880,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "ChangeFormation",
+                    "type": "Button",
+                    "id": "379a350a-e063-4112-8c1e-a56cab4695a7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1265,6 +1274,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "29fbd037-339a-4e43-9d29-9ebd096a2c15",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ChangeFormation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

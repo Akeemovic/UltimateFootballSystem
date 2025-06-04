@@ -1,4 +1,4 @@
-﻿namespace UltimateFootballSystem.Gameplay.Common.Scripts.Shirts
+﻿namespace UltimateFootballSystem.Gameplay.Common
 {
     public enum ShirtType
     {

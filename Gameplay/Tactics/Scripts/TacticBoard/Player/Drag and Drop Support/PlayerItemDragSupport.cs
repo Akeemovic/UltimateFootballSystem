@@ -1,10 +1,11 @@
 using UIWidgets;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Options;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Drag_and_Drop_Support
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     /// <summary>
     /// Player Profile drag.
@@ -50,8 +51,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Dra
             base.Start();
         
             // DragInfoView = TacticsBoardController.Instance.DragInfoView;
-            DragInfoView = Source.Controller.DragInfoView;
-            // Disable raycast target on view
+            DragInfoView = Source.Controller.dragInfoView;
+            // Disable raycast target on tacticsPitch
             // to prevent it from blocking pointer raycast 
             DragInfoView.GetComponent<Image>().raycastTarget = false;
 
@@ -123,7 +124,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Dra
                 // Don't show unless startingList views are being dragged
                 if (Source.ViewOwnerOption != PlayerItemViewOwnerOption.StartingList) return;
                 // TacticsBoardController.Instance.View.ShowUsablePlayerItemViews();
-                Source.Controller.View.ShowUsablePlayerItemViews();
+                Source.Controller.tacticsPitch.ShowUsablePlayerItemViews();
                 // TacticsPitch.ShowUsablePlayerItemViews(TacticsBoardController.Instance.zoneContainerViews);
             }
         }
@@ -177,7 +178,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Dra
             using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
             {
                 // TacticsBoardController.Instance.View.HideUnusedPlayerItemViews();
-                Source.Controller.View.HideUnusedPlayerItemViews();
+                Source.Controller.tacticsPitch.HideUnusedPlayerItemViews();
                 // TacticsPitch.HideUnusedPlayerItemViews(TacticsBoardController.Instance.zoneContainerViews);
             }
         }

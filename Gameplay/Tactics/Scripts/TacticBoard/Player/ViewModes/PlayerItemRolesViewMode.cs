@@ -1,7 +1,8 @@
 ﻿using TMPro;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PlayerItemRolesViewMode : MonoBehaviour, IPlayerItemViewMode
     //, IPointerClickHandler

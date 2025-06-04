@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
+using UnityEngine;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PlayerItemOtherIndicators : MonoBehaviour
     {

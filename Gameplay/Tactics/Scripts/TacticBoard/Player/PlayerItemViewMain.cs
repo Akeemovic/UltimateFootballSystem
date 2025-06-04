@@ -1,13 +1,10 @@
 using TMPro;
 using UltimateFootballSystem.Common.Scripts.Utils;
-using UltimateFootballSystem.Gameplay.Common.Widgets.StarRating;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Drag_and_Drop_Support;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.ViewModes.Options;
+using UltimateFootballSystem.Gameplay.Common.Widgets;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class PlayerItemViewMain : MonoBehaviour
     {
@@ -52,7 +49,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
         private CanvasGroup canvasGroup;
     
         /// <summary>
-        /// Name view.
+        /// Name tacticsPitch.
         /// </summary>
         public TextMeshProUGUI NameText;
     
@@ -63,12 +60,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
         private StarRatingView StarRatingView;
 
         /// <summary>
-        /// Positions Text Background Image view.
+        /// Positions Text Background Image tacticsPitch.
         /// </summary>
         public Image PositionsTextBgImage;
     
         /// <summary>
-        /// Positions view.
+        /// Positions tacticsPitch.
         /// </summary>
         public TextMeshProUGUI PositionsText;
     
@@ -96,7 +93,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player
         }
 
         /// <summary>
-        /// Update view.
+        /// Update tacticsPitch.
         /// </summary>
         public virtual void UpdateView()
         {

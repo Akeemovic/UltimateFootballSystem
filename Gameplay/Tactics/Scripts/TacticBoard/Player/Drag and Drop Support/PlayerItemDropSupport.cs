@@ -1,10 +1,12 @@
 using UIWidgets;
 using UltimateFootballSystem.Core.TacticsEngine;
-using UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Options;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Drag_and_Drop_Support
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     /// <summary>
     /// Player Profile drop.
@@ -159,8 +161,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Scripts.TacticBoard.Player.Dra
 
             // data.SetDropTargetViewReference(Target);
 
-            // Controller.SwapPlayers(data, Target.GetDragData());
-            Controller.PlayerItemManager.SwapPlayers(data, Target.GetDragData());
+            // Controller.SwapPlayersDropped(data, Target.GetDragData());
+            Controller.BoardPlayerItemManager.SwapPlayersDropped(data, Target.GetDragData());
 
             // Don't call SetInUseForFormation for views NOT OWNED by the StartingList
             if (Target.ViewOwnerOption != PlayerItemViewOwnerOption.StartingList) return;

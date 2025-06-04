@@ -18,7 +18,8 @@ namespace UltimateFootballSystem.Core.TacticsEngine
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<TacticalPosition> ActivePositions { get; private set; } = new List<TacticalPosition>();
+        // public List<TacticalPosition> ActivePositions { get; private set; } = new List<TacticalPosition>();
+        public List<TacticalPosition> ActivePositions { get; set; } = new List<TacticalPosition>();
         public List<int?> Substitutes { get; set; } = new List<int?>();// Players' Ids
         public List<int?> Reserves { get; set; } // Players' Ids
 
@@ -193,6 +194,9 @@ namespace UltimateFootballSystem.Core.TacticsEngine
                 });
             }
 
+            data.Substitutes = Substitutes;
+            data.Reserves = Reserves;
+            
             return data;
         }
 
@@ -244,6 +248,37 @@ namespace UltimateFootballSystem.Core.TacticsEngine
         {
             var data = JsonConvert.DeserializeObject<TacticData>(json);
             return FromData(data);
+        }
+
+        // Get formation as a string (e.g. "4-4-2")
+        public string FormationToString()
+        {
+            // Count positions by position group
+            var defenseCnt = ActivePositions.Count(p => p.PositionGroup == TacticalPositionGroupOption.D_Center ||
+                                                     p.PositionGroup == TacticalPositionGroupOption.D_Flank);
+
+            var dmCnt = ActivePositions.Count(p => p.PositionGroup == TacticalPositionGroupOption.DM_Center ||
+                                                p.PositionGroup == TacticalPositionGroupOption.DM_Flank);
+
+            var midCnt = ActivePositions.Count(p => p.PositionGroup == TacticalPositionGroupOption.M_Center ||
+                                                 p.PositionGroup == TacticalPositionGroupOption.M_Flank);
+
+            var amCnt = ActivePositions.Count(p => p.PositionGroup == TacticalPositionGroupOption.AM_Center ||
+                                               p.PositionGroup == TacticalPositionGroupOption.AM_Flank);
+
+            var fwdCnt = ActivePositions.Count(p => p.PositionGroup == TacticalPositionGroupOption.ST_Center);
+
+            // Build the formation string
+            var formationParts = new List<string>();
+
+            formationParts.Add(defenseCnt.ToString());
+
+            if (dmCnt > 0) formationParts.Add(dmCnt.ToString());
+            if (midCnt > 0) formationParts.Add(midCnt.ToString());
+            if (amCnt > 0) formationParts.Add(amCnt.ToString());
+            if (fwdCnt > 0) formationParts.Add(fwdCnt.ToString());
+
+            return string.Join("-", formationParts);
         }
     }
 }
