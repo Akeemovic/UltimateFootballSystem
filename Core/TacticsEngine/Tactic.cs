@@ -50,7 +50,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             // Create all tactical positions from the formation array
             foreach (var posOption in formation)
             {
-                var posGroup = PositionGroupManager.GetGroupForPosition(posOption);
+                var posGroup = TacticalPositionUtils.GetGroupForPosition(posOption);
                 var availableRoles = RoleManager.GetRolesForPosition(posOption)
                     .Select(r => RoleManager.GetRole(r))
                     .ToList();
@@ -129,7 +129,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             var newPositions = new List<TacticalPosition>();
             foreach (var posOption in newFormation)
             {
-                var posGroup = PositionGroupManager.GetGroupForPosition(posOption);
+                var posGroup = TacticalPositionUtils.GetGroupForPosition(posOption);
                 var roles = RoleManager.GetRolesForPosition(posOption)
                     .Select(r => RoleManager.GetRole(r))
                     .ToList();
@@ -211,7 +211,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
 
             foreach (var posData in data.Positions)
             {
-                var posGroup = PositionGroupManager.GetGroupForPosition(posData.Position);
+                var posGroup = TacticalPositionUtils.GetGroupForPosition(posData.Position);
                 var roles = RoleManager.GetRolesForPosition(posData.Position)
                     .Select(r => RoleManager.GetRole(r))
                     .ToList();

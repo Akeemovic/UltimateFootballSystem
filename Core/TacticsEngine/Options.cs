@@ -9,14 +9,14 @@
         OutOfPosessesion
     }
 
-    public enum TacticalPositionGenericOption
+    public enum TacticalPositionTypeOption
     {
         GK = 1,
         DL, DC, DR,
         WBL, DMC, WBR,
         ML, MC, MR,
         AML, AMC, AMR,
-        F
+        ST
     }
 
     public enum TacticalPositionGroupOption

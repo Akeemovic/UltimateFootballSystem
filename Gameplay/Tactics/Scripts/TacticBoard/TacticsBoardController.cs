@@ -65,6 +65,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         [SerializeField] private bool autosaveApply = true;
 
         public int allowedSubstitutes = 9;
+        public bool autoSortSubstitutes = true;
     
         // public static TacticsBoardController Instance;
 
@@ -372,7 +373,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                             var tacticalPositionOption = zoneView.tacticalPositionOption;
                             // Create an instance of the tactical position to manage positions related roles & duties 
                             playerItemView.TacticalPosition = new TacticalPosition(
-                                PositionGroupManager.GetGroupForPosition(tacticalPositionOption),
+                                TacticalPositionUtils.GetGroupForPosition(tacticalPositionOption),
                                 tacticalPositionOption,
                                 RoleManager.GetRolesForPosition(tacticalPositionOption)
                                     .Select(roleOption => RoleManager.GetRole(roleOption))

@@ -117,14 +117,21 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 NameText.text = _playerItemView.Profile.Name;
                 StarRatingView.SetRating(_playerItemView.Profile.CurrentAbility);
 
-                if (_playerItemView.InUseForFormation)
+                // if (_playerItemView.InUseForFormation)
+                // {
+                //     // PositionsText.text = _playerItemView.Profile
+                //     // PositionsTextBgImage.color = _playerItemView.Profile.(_playerItemView.TacticalPositionOption);
+                //     // PositionsTextBgImage.color = NumToVisualHelper.GetColorFromValue(50);
+                //     PositionsTextBgImage.color = NumToVisualHelper.GetColorFromValue(80);
+                // }
+                
+                PositionsText.SetText(_playerItemView.Profile.GetLearnedPositionsTypeString());
+                if (_playerItemView.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
                 {
-                    // PositionsText.text = _playerItemView.Profile
-                    // PositionsTextBgImage.color = _playerItemView.Profile.(_playerItemView.TacticalPositionOption);
-                    // PositionsTextBgImage.color = NumToVisualHelper.GetColorFromValue(50);
-                    PositionsTextBgImage.color = NumToVisualHelper.GetColorFromValue(80);
+                    var playerPositionTypeRating =
+                        _playerItemView.Profile.GetPositionRating(_playerItemView.TacticalPosition.PositionType);
+                    PositionsTextBgImage.color = NumToVisualHelper.GetColorFromValue(playerPositionTypeRating);
                 }
-            
             }
             else
             {
@@ -181,7 +188,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         {
             NameText.text = "";
             StarRatingView.SetRating(0);
-            PositionsText.text = "UNAVAILABLE";
+            PositionsText.text = "NONE";
         }
     }
 }

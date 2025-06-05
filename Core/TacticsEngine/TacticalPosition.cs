@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UltimateFootballSystem.Core.Entities;
+using UltimateFootballSystem.Core.TacticsEngine.Utils;
 
 namespace UltimateFootballSystem.Core.TacticsEngine
 {
@@ -12,6 +13,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
         // Core properties
         public TacticalPositionOption Position { get; }
         public TacticalPositionGroupOption PositionGroup { get; }
+        public TacticalPositionTypeOption PositionType { get; }
 
         // Role management
         public List<TacticalRole> AvailableRoles { get; private set; } = new List<TacticalRole>();
@@ -35,6 +37,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
         {
             Position = position;
             PositionGroup = positionGroup;
+            PositionType = TacticalPositionUtils.GetTypeForPosition(Position);
 
             // Filter roles that are compatible with this position
             foreach (var role in availableRoles)
@@ -104,13 +107,14 @@ namespace UltimateFootballSystem.Core.TacticsEngine
                 return 0;
 
             // Base rating from position
-            int positionRating = AssignedPlayer.GetPositionRating(Position);
+            // int positionRating = AssignedPlayer.GetPositionRating(Position);
 
             // Additional rating from role suitability
             int roleRating = AssignedPlayer.GetRoleRating(SelectedRole.RoleOption);
 
             // Combine ratings with some formula (could be more sophisticated)
-            return (positionRating * 3 + roleRating * 2) / 5;
+            // return (positionRating * 3 + roleRating * 2) / 5;
+            return 0;
         }
     }
 }

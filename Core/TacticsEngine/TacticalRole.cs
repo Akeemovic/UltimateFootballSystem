@@ -82,7 +82,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
         private void InitializePositions(List<TacticalPositionGroupOption> availablePositionGroups)
         {
             AvailablePositionGroups = availablePositionGroups;
-            AvailablePositions = PositionGroupManager.GetPositionOptionsForGroupAll(AvailablePositionGroups.ToArray());
+            AvailablePositions = TacticalPositionUtils.GetPositionOptionsForGroupAll(AvailablePositionGroups.ToArray());
 
             _defaultPosition = AvailablePositions.FirstOrDefault();
             SetSelectedPosition(_defaultPosition);

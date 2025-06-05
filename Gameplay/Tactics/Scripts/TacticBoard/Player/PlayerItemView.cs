@@ -90,7 +90,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         private void OnEnable()
         {
             // TacticalPosition = new TacticalPosition(
-            //     PositionGroupManager.GetGroupForPosition(TacticalPositionOption),
+            //     TacticalPositionUtils.GetGroupForPosition(TacticalPositionOption),
             //     TacticalPositionOption,
             //     RoleManager.GetRolesForPosition(TacticalPositionOption)
             //         .Select(roleOption => RoleManager.GetRole(roleOption))
