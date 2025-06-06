@@ -1407,12 +1407,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewportRectTransform: {fileID: 0}
   targetScrollRect: {fileID: 0}
-  scrollAxes: 17
-  usedScrollMethod: 0
+  scrollAxes: 16
+  usedScrollMethod: 1
   scrollSpeed: 50
   endOfListJumpScrollSpeed: 150
   jumpOffsetThreshold: 1
-  cancelScrollMouseButtons: 273
+  cancelScrollMouseButtons: -1
   cancelScrollKeys: 
 --- !u!1 &330585543
 GameObject:
@@ -5856,8 +5856,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewportRectTransform: {fileID: 0}
   targetScrollRect: {fileID: 0}
-  scrollAxes: -1
-  usedScrollMethod: 0
+  scrollAxes: 16
+  usedScrollMethod: 1
   scrollSpeed: 50
   endOfListJumpScrollSpeed: 150
   jumpOffsetThreshold: 1
@@ -12628,7 +12628,8 @@ MonoBehaviour:
   reservePlayersIds: 
   autosaveApply: 1
   allowedSubstitutes: 9
-  autoSortSubstitutes: 1
+  autoSortSubstitutes: 0
+  autoSortReserves: 1
 --- !u!1 &2103336998
 GameObject:
   m_ObjectHideFlags: 0
