@@ -167,18 +167,18 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         // Swapping for Select-and-swap
         public void SwapPlayersSelected(PlayerItemDragData selected1, PlayerItemDragData selected2)
         {
-            using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-            {
+            // using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
+            // {
                 using var _ = _controller.SubstitutesPlayersItems.BeginUpdate();
                 using var __ = _controller.ReservePlayersItems.BeginUpdate();
-
+        
                 bool involvedSubstitutes = false;
                 bool involvedReserves = false;
-
+        
                 // Store the players temporarily
                 var player1 = selected1.Profile;
                 var player2 = selected2.Profile;
-
+        
                 // Swap player 1 to position 2
                 if (IsValidIndex(selected2.StartingPlayersListIndex, _controller.startingPlayersViews))
                 {
@@ -199,7 +199,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     _controller.ReservePlayersItems[selected2.ReservePlayersListIndex] = player1;
                     involvedReserves = true;
                 }
-
+        
                 // Swap player 2 to position 1
                 if (IsValidIndex(selected1.StartingPlayersListIndex, _controller.startingPlayersViews))
                 {
@@ -220,10 +220,10 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     _controller.ReservePlayersItems[selected1.ReservePlayersListIndex] = player2;  
                     involvedReserves = true;
                 }
-
+        
                 _controller.SubstitutesPlayersItems.EndUpdate();
                 _controller.ReservePlayersItems.EndUpdate();
-
+        
                 // Use controller as mediator
                 if (involvedSubstitutes)
                 {
@@ -235,8 +235,125 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     // _controller.boardViewRefreshManager.RefreshReserveViews();
                     _controller.BoardInitializationManager.InitializeReservePlayers();
                 }
-            }
+            // }
         }
+        
+        // Swapping for Select-and-swap
+        // public void SwapPlayersSelected(PlayerItemDragData selected1, PlayerItemDragData selected2)
+        // {
+        //     // using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
+        //     // {
+        //         using var _ = _controller.SubstitutesPlayersItems.BeginUpdate();
+        //         using var __ = _controller.ReservePlayersItems.BeginUpdate();
+        //
+        //         bool involvedSubstitutes = false;
+        //         bool involvedReserves = false;
+        //
+        //         // Store the players temporarily
+        //         var player1 = selected1.Profile;
+        //         var player2 = selected2.Profile;
+        //         
+        //         // Check if either player is null/empty
+        //         bool player1IsEmpty = !selected1.IsValidPlayer();
+        //         bool player2IsEmpty = !selected2.IsValidPlayer();
+        //
+        //         // Handle player 1 moving to position 2
+        //         if (IsValidIndex(selected2.StartingPlayersListIndex, _controller.startingPlayersViews))
+        //         {
+        //             _controller.startingPlayersViews[selected2.StartingPlayersListIndex].SetPlayerData(player1);
+        //         }
+        //         else if (IsValidIndex(selected2.BenchPlayersListIndex, _controller.substitutesPlayersViews))
+        //         {
+        //             if (!player2IsEmpty || player1IsEmpty)
+        //             {
+        //                 // Normal swap or empty-to-empty
+        //                 _controller.substitutesPlayersViews[selected2.BenchPlayersListIndex].SetPlayerData(player1);
+        //                 if (selected2.BenchPlayersListIndex < _controller.SubstitutesPlayersItems.Count)
+        //                 {
+        //                     _controller.SubstitutesPlayersItems[selected2.BenchPlayersListIndex] = player1;
+        //                 }
+        //             }
+        //             else
+        //             {
+        //                 // Moving to an empty substitute slot
+        //                 if (selected2.BenchPlayersListIndex < _controller.SubstitutesPlayersItems.Count)
+        //                 {
+        //                     _controller.SubstitutesPlayersItems[selected2.BenchPlayersListIndex] = player1;
+        //                 }
+        //                 else
+        //                 {
+        //                     _controller.SubstitutesPlayersItems.Add(player1);
+        //                 }
+        //             }
+        //             involvedSubstitutes = true;
+        //         }
+        //         else if (IsValidIndex(selected2.ReservePlayersListIndex, _controller.reservePlayersViews))
+        //         {
+        //             _controller.reservePlayersViews[selected2.ReservePlayersListIndex].SetPlayerData(player1);
+        //             _controller.ReservePlayersItems[selected2.ReservePlayersListIndex] = player1;
+        //             involvedReserves = true;
+        //         }
+        //
+        //         // Handle player 2 moving to position 1
+        //         if (IsValidIndex(selected1.StartingPlayersListIndex, _controller.startingPlayersViews))
+        //         {
+        //             _controller.startingPlayersViews[selected1.StartingPlayersListIndex].SetPlayerData(player2);
+        //         }
+        //         else if (IsValidIndex(selected1.BenchPlayersListIndex, _controller.substitutesPlayersViews))
+        //         {
+        //             // Check if we're moving from a non-bench position to an empty bench slot
+        //             if (selected2.DragSourceView.ViewOwnerOption != PlayerItemViewOwnerOption.BenchList && player2IsEmpty)
+        //             {
+        //                 // Moving to empty slot - set original position to null
+        //                 if (selected1.BenchPlayersListIndex < _controller.SubstitutesPlayersItems.Count)
+        //                 {
+        //                     _controller.SubstitutesPlayersItems[selected1.BenchPlayersListIndex] = null;
+        //                 }
+        //             }
+        //             else
+        //             {
+        //                 // Normal swap
+        //                 _controller.substitutesPlayersViews[selected1.BenchPlayersListIndex].SetPlayerData(player2);
+        //                 if (selected1.BenchPlayersListIndex < _controller.SubstitutesPlayersItems.Count)
+        //                 {
+        //                     _controller.SubstitutesPlayersItems[selected1.BenchPlayersListIndex] = player2;
+        //                 }
+        //             }
+        //             involvedSubstitutes = true;
+        //         }
+        //         else if (IsValidIndex(selected1.ReservePlayersListIndex, _controller.reservePlayersViews))
+        //         {
+        //             if (player2IsEmpty)
+        //             {
+        //                 // Remove from reserves when swapping to empty position
+        //                 _controller.ReservePlayersItems.RemoveAt(selected1.ReservePlayersListIndex);
+        //                 involvedReserves = true;
+        //             }
+        //             else
+        //             {
+        //                 // Normal swap
+        //                 _controller.reservePlayersViews[selected1.ReservePlayersListIndex].SetPlayerData(player2);
+        //                 _controller.ReservePlayersItems[selected1.ReservePlayersListIndex] = player2;
+        //                 involvedReserves = true;
+        //             }
+        //         }
+        //
+        //         _controller.SubstitutesPlayersItems.EndUpdate();
+        //         _controller.ReservePlayersItems.EndUpdate();
+        //
+        //         // Use controller as mediator
+        //         if (involvedSubstitutes)
+        //         {
+        //             _controller.boardViewRefreshManager.CompactSubstitutes();
+        //             _controller.boardViewRefreshManager.RefreshSubstituteViews();
+        //         }
+        //         
+        //         if (involvedReserves)
+        //         {
+        //             _controller.BoardInitializationManager.InitializeReservePlayers();
+        //         }
+        //     // }
+        // }
 
         private bool IsValidIndex(int index, PlayerItemView[] views)
         {

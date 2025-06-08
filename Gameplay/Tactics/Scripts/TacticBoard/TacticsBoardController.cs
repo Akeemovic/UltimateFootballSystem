@@ -10,6 +10,7 @@ using UnityEngine;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
+    [RequireComponent(typeof(AudioSource))]
     public class TacticsBoardController : MonoBehaviour
     {
         public Canvas canvas;
@@ -45,7 +46,16 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         
         public PlayerDataManager PlayerDataManager;
         public int teamId = 419;
-
+        
+        private SelectionSwapManager selectionSwapManager;
+    
+        // Audio management
+        [Header("Audio Settings")]
+        [SerializeField] public AudioSource audioSource;
+        [SerializeField] public AudioClip errorAudioClip; // Optional error sound
+        [SerializeField] public AudioClip selectAudioClip;
+        [SerializeField] public AudioClip clickAudioClip;
+        
         // Mapping tactical positions to player IDs
         public Dictionary<TacticalPositionOption, int?> StartingPositionIdMapping;
         public List<int?> BenchPlayersIds;
@@ -108,6 +118,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             dragInfoView.Controller = this;
             dragInfoView.gameObject.SetActive(false);
             
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+            {
+                audioSource = gameObject.AddComponent<AudioSource>();
+            }
+            
             zoneContainerViews = tacticsPitch.zoneContainerViews;
             
             Debug.Log("zoneContainerViews count" + zoneContainerViews.Length);
@@ -117,6 +133,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             boardViewRefreshManager = new BoardViewRefreshManager(this, BoardInitializationManager);
             BoardInitializationManager = new BoardInitializationManager(this, boardTacticManager);
             boardSelectionManager = new BoardSelectionManager(this, boardViewRefreshManager);
+            // Initialize selection swap manager
+            selectionSwapManager = new SelectionSwapManager(this);
         }
 
         private void Start()
@@ -141,6 +159,11 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                selectionSwapManager.ClearSelection();
+            }
+            
             if (Input.GetKeyDown(KeyCode.S))
             {
                 boardTacticManager.SaveTacticWithTimestamp();
@@ -290,6 +313,48 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 }
             }
         }
+
+        #region Effects
+
+        // Add these public methods for audio
+        public void PlayClickSound()
+        {
+            if (clickAudioClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(clickAudioClip);
+            }
+        }
+    
+        public void PlaySelectSound()
+        {
+            if (selectAudioClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(selectAudioClip);
+            }
+        }
+    
+        public void PlayErrorSound()
+        {
+            if (errorAudioClip != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(errorAudioClip);
+            }
+        }
+    
+        // Add method to handle item clicks
+        public void HandleItemClicked(PlayerItemView clickedItem)
+        {
+            Debug.Log($"{clickedItem.Profile.Name} data Reached");
+            selectionSwapManager.HandleItemClicked(clickedItem);
+        }
+    
+        // Add method to clear selections (useful for keyboard shortcuts)
+        public void ClearClickSelections()
+        {
+            selectionSwapManager.ClearSelection();
+        }
+        
+        #endregion
         
         public void RegisterDropdownListeners()
         {

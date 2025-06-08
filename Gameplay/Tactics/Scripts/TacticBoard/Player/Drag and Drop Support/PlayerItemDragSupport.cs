@@ -105,7 +105,13 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
             // Null players cannot be moved around unless owned starting list
             if (!Data.IsValidPlayer() && Data.DragSourceView.ViewOwnerOption != PlayerItemViewOwnerOption.StartingList) { return; }
-        
+
+            /*
+             * This automatically clears whatever is previously selected through click-and-swap method
+             * Since both are different methods of doing the same thing, we don't want spill over data
+            */ 
+            Source.Controller.ClearClickSelections();      
+
             // Debug.Log(
             //     "SetDragSourceViewReference position is: " + Data.DragSourceView.ParentPositionZoneView.tacticalPositionOption);
             // Debug.Log(

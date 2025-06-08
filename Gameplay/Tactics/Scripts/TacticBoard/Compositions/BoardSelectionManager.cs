@@ -16,7 +16,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             _viewRefreshManager = viewRefreshManager;
         }
 
-        public enum AutopickCriteria
+        public enum AutoPickCriteria
         {
             PositionalCompatibility,
             CurrentAbility, 
@@ -26,33 +26,46 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             MatchFitness
         }
 
-        public void Autopick(AutopickCriteria criteria)
+        
+        // Convenience methods
+        public void AutoPickAllSelections(AutoPickCriteria criteria) => AutoPick(criteria);
+        public void AutoPickStartingLineup(AutoPickCriteria criteria) => AutoPick(criteria, includeStarters: true);
+        public void AutoPickSubstitutes(AutoPickCriteria criteria) => AutoPick(criteria, includeSubs: true);
+        
+        private void AutoPick(AutoPickCriteria criteria, bool includeStarters = false, bool includeSubs = false)
         {
+            /*
+             * if includeStarters then move all starting players items to reserve, auto pick by criteria,
+             * then add the remaining to reserves, the init reserves - same for includeSubs
+            */
+
+            
+            // Clear all
             // TODO: Implement autopick logic based on criteria
             switch (criteria)
             {
-                case AutopickCriteria.PositionalCompatibility:
+                case AutoPickCriteria.PositionalCompatibility:
                     // Sort Positional Compatibility and pick best players
                     break;
-                case AutopickCriteria.CurrentAbility:
+                case AutoPickCriteria.CurrentAbility:
                     // Sort by current ability and pick best players
                     break;
-                case AutopickCriteria.PotentialAbility:
+                case AutoPickCriteria.PotentialAbility:
                     // Sort by potential ability and pick best players
                     break;
-                case AutopickCriteria.Condition:
+                case AutoPickCriteria.Condition:
                     // Sort by condition and pick best players
                     break;
-                case AutopickCriteria.Morale:
+                case AutoPickCriteria.Morale:
                     // Sort by morale and pick best players
                     break;
-                case AutopickCriteria.MatchFitness:
+                case AutoPickCriteria.MatchFitness:
                     // Sort by match fitness and pick best players
                     break;
             }
         }
 
-        public void ClearSelection(bool clearStarting, bool clearSubs = false)
+        private void ClearSelection(bool clearStarting, bool clearSubs = false)
         {
             using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
             {
@@ -116,7 +129,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 {
                     _viewRefreshManager.RefreshSubstituteViews();
                 }
-                
+                //
                 // Always refresh reserves since we added players
                 // _viewRefreshManager.RefreshReserveViews(_controller.autoSortReserves); // Sort if auto-sort is enabled
                 _controller.BoardInitializationManager.InitializeReservePlayers();

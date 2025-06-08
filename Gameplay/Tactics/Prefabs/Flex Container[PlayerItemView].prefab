@@ -5759,7 +5759,7 @@ GameObject:
   - component: {fileID: 8786742210087157952}
   - component: {fileID: 6859741980664095624}
   - component: {fileID: 6333638711435308005}
-  - component: {fileID: 3498109586441105582}
+  - component: {fileID: 4498213694724599764}
   m_Layer: 0
   m_Name: SelectionLayer
   m_TagString: Untagged
@@ -5866,9 +5866,7 @@ MonoBehaviour:
   m_Interactable: 1
   m_TargetGraphic: {fileID: 6859741980664095624}
   playerItemView: {fileID: 3422317845766635638}
-  selectAudioClip: {fileID: 8300000, guid: 7e1edf546646c4749bb4830dd4264367, type: 3}
-  clickAudioClip: {fileID: 8300000, guid: 9074a77a1a42df340800aea2c7c7c951, type: 3}
---- !u!82 &3498109586441105582
+--- !u!82 &4498213694724599764
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -163,7 +163,10 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
             // Controller.SwapPlayersDropped(data, Target.GetDragData());
             Controller.BoardPlayerItemManager.SwapPlayersDropped(data, Target.GetDragData());
-
+            
+            // Play click sound on successful drop
+            Controller.PlayClickSound();
+            
             // Don't call SetInUseForFormation for views NOT OWNED by the StartingList
             if (Target.ViewOwnerOption != PlayerItemViewOwnerOption.StartingList) return;
             // Make target available for formation and source not available for formation
