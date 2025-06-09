@@ -49,6 +49,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         private CanvasGroup canvasGroup;
     
         /// <summary>
+        /// Name Text Background Image tacticsPitch.
+        /// </summary>
+        [Header("Name UGUI Elements")]
+        public Image NameTextBgImage;
+        
+        /// <summary>
         /// Name tacticsPitch.
         /// </summary>
         public TextMeshProUGUI NameText;
@@ -56,12 +62,14 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// <summary>
         /// Star Rating View.
         /// </summary>
+        [Header("Stars")]
         [SerializeField]
         private StarRatingView StarRatingView;
-
+        
         /// <summary>
         /// Positions Text Background Image tacticsPitch.
         /// </summary>
+        [Header("Positions UGUI Elements")]
         public Image PositionsTextBgImage;
     
         /// <summary>
@@ -81,7 +89,10 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// </summary>
         [SerializeField]
         private PlayerItemOtherIndicators playerItemOtherIndicators;
-    
+
+        private readonly Color defaultGrey = new Color(0.22f, 0.22f, 0.22f);
+        private readonly Color defaultNameTextColor = new Color(0.09f, 0.02f, 0.44f);
+        
         private void Update()
         {
             // if (Input.GetKeyDown(KeyCode.G)) ViewMode = PlayerItemViewModeOption.General;
@@ -114,6 +125,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         
             if (_playerItemView.HasPlayerItem)
             {
+                NameTextBgImage.color = defaultNameTextColor;
                 NameText.text = _playerItemView.Profile.Name;
                 StarRatingView.SetRating(_playerItemView.Profile.CurrentAbility);
 
@@ -126,6 +138,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 // }
                 
                 PositionsText.SetText(_playerItemView.Profile.GetLearnedPositionsTypeString());
+                // Update color to match position compatibility for player
                 if (_playerItemView.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
                 {
                     var playerPositionTypeRating =
@@ -186,9 +199,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
     
         private void SetDefaultView()
         {
+            NameTextBgImage.color = defaultGrey;
             NameText.text = "";
             StarRatingView.SetRating(0);
-            PositionsText.text = "NONE";
+            PositionsTextBgImage.color = defaultGrey;
+            // PositionsText.text = "NONE";
+            PositionsText.text = "-";
         }
     }
 }
