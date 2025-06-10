@@ -50,17 +50,17 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 view.SetPlayerData(player);
                 view.BenchPlayersListIndex = i; // Update index
                 
-                if (player != null)
-                {
-                    view.placeholderView.Hide();
-                    view.mainView.Show();
-                }
-                else
-                {
-                    view.placeholderView.Show();
-                    view.mainView.Hide();
-                    view.placeholderView.UpdatePositionText();
-                }
+                // if (player != null)
+                // {
+                //     view.placeholderView.Hide();
+                //     view.mainView.Show();
+                // }
+                // else
+                // {
+                //     view.placeholderView.Show();
+                //     view.mainView.Hide();
+                //     view.placeholderView.UpdatePositionText();
+                // }
             }
             
             // Update header count (only count non-null players)

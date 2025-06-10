@@ -164,6 +164,21 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.BenchList;
                 // Register for formation status changes
                 playerItemView.OnFormationStatusChanged += _boardTacticManager.HandleFormationStatusChanged;
+                // if (i < _controller.SubstitutesPlayersItems.Count && _controller.SubstitutesPlayersItems[i] != null)
+                // {
+                //     // Set data for the player profile tacticsPitch if the item exists
+                //     playerItemView.SetPlayerData(_controller.SubstitutesPlayersItems[i]);
+                // }
+                // else
+                // {
+                //     // Show placeholder and hide the main tacticsPitch if the player item is null or out of range
+                //     playerItemView.placeholderView.Show();
+                //     playerItemView.mainView.Hide();
+                // }
+                // playerItemView.BenchPlayersListIndex = i;
+                // _controller.substitutesPlayersViews[i] = playerItemView;
+                // playerItemView.placeholderView.UpdatePositionText();
+                
                 if (i < _controller.SubstitutesPlayersItems.Count && _controller.SubstitutesPlayersItems[i] != null)
                 {
                     // Set data for the player profile tacticsPitch if the item exists
@@ -171,13 +186,10 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 }
                 else
                 {
-                    // Show placeholder and hide the main tacticsPitch if the player item is null or out of range
-                    playerItemView.placeholderView.Show();
-                    playerItemView.mainView.Hide();
+                    playerItemView.SetPlayerData(null);
                 }
                 playerItemView.BenchPlayersListIndex = i;
                 _controller.substitutesPlayersViews[i] = playerItemView;
-                playerItemView.placeholderView.UpdatePositionText();
                 
                 // Logging to verify correct initialization
                 string playerName = playerItemView.HasPlayerItem ? playerItemView.Profile.Name : "Placeholder";

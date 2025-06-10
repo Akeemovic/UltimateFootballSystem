@@ -74,13 +74,13 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     zoneView.Show();
                     zoneView.childPlayerItemView.Show();
 
-                    if (!zoneView.InUseForFormation || !zoneView.childPlayerItemView.InUseForFormation)
-                    {
-                        zoneView.childPlayerItemView.mainView.gameObject.SetActive(false);
-                        zoneView.childPlayerItemView.placeholderView.gameObject.SetActive(true);
-                        // zoneView.childPlayerItemView.mainView.Hide();
-                        // zoneView.childPlayerItemView.placeholderView.Show();
-                    }
+                    // if (!zoneView.InUseForFormation || !zoneView.childPlayerItemView.InUseForFormation)
+                    // {
+                    //     zoneView.childPlayerItemView.mainView.gameObject.SetActive(false);
+                    //     zoneView.childPlayerItemView.placeholderView.gameObject.SetActive(true);
+                    //     // zoneView.childPlayerItemView.mainView.Hide();
+                    //     // zoneView.childPlayerItemView.placeholderView.Show();
+                    // }
                 }
             }
             // }
