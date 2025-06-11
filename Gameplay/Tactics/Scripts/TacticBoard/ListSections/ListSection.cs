@@ -23,6 +23,15 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         public void UpdateFormattedHeaderText(string text, bool appendToDefaultText = true)
         {
+            // Guard against null format
+            if (string.IsNullOrEmpty(headerTextFormat))
+            {
+                Debug.LogWarning($"UpdateFormattedHeaderText called before SetHeaderTextFormat on {gameObject.name}");
+                // Fallback to simple text display
+                SetHeaderText(text, appendToDefaultText);
+                return;
+            }
+            
             string formattedText;
             if (appendToDefaultText && !string.IsNullOrEmpty(defaultText))
             {
@@ -38,7 +47,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
     
         public void SetHeaderText(string text, bool appendToDefaultText = true)
         {
-            if (appendToDefaultText)
+            if (appendToDefaultText && !string.IsNullOrEmpty(defaultText))
             {
                 headerTextView.text = $"{defaultText} {text}";
             }

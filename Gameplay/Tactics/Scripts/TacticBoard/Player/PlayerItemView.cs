@@ -317,8 +317,11 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 Debug.LogWarning("Awake: ParentPositionZoneView is null");
             }
 
-            Profile = new Core.Entities.Player() { Id = 0, Name = null, SquadNumber = null, CurrentAbility = 0 };
-            HasPlayerItem = false;
+            
+            // Profile = new Core.Entities.Player() { Id = 0, Name = null, SquadNumber = null, CurrentAbility = 0 };
+            // HasPlayerItem = false;
+            SetInUseForFormation(false);
+            SetPlayerData(null);
         }
 
         private void Start()
@@ -331,6 +334,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
                 Debug.Log($"Awake: TacticalPositionOption is set to {TacticalPositionOption}");
             }
+            
+            SetInUseForFormation(false);
+            SetPlayerData(null);
         }
 
         /// <summary>
