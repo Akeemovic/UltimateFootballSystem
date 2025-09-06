@@ -143,6 +143,76 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             }
             // }
         }
+
+        public void ShowFormationZonesOnly()
+        {
+            for (var i = 0; i < zoneContainerViews.Length; i++)
+            {
+                // Exclude the first zone as it only contains one zone/playerItemView that is always available
+                if (i == 0) continue;
+
+                var zoneViews = zoneContainerViews[i].ZoneViews;
+
+                if (i >= 1 && i <= 4) // For 2nd to 5th containers (index 1 to 4)
+                {
+                    if (zoneViews.Length >= 3) // Ensure there is a 3rd child zone
+                    {
+                        var thirdZoneView = zoneViews[2];
+                        if (thirdZoneView != null)
+                        {
+                            if (thirdZoneView.childPlayerItemView.InUseForFormation)
+                            {
+                                thirdZoneView.Show();
+                                thirdZoneView.childPlayerItemView.Show();
+                            }
+                            else
+                            {
+                                thirdZoneView.Hide();
+                            }
+                        }
+                    }
+
+                    // Show/hide other zones based on formation usage
+                    for (int j = 0; j < zoneViews.Length; j++)
+                    {
+                        if (j != 2) // Skip the 3rd zone as it's handled above
+                        {
+                            var zoneView = zoneViews[j];
+                            if (zoneView != null)
+                            {
+                                zoneView.Show(); // Zone itself is always shown
+                                if (zoneView.childPlayerItemView.InUseForFormation)
+                                {
+                                    zoneView.childPlayerItemView.Show();
+                                }
+                                else
+                                {
+                                    zoneView.childPlayerItemView.Hide();
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (i == zoneContainerViews.Length - 1) // For the last container
+                {
+                    foreach (var zoneView in zoneViews)
+                    {
+                        if (zoneView != null)
+                        {
+                            zoneView.Show(); // Zone itself is always shown
+                            if (zoneView.childPlayerItemView.InUseForFormation)
+                            {
+                                zoneView.childPlayerItemView.Show();
+                            }
+                            else
+                            {
+                                zoneView.childPlayerItemView.Hide();
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

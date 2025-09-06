@@ -94,12 +94,6 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         public void SetFormationViews(TacticalPositionOption[] formationTacticalPositions, bool initCall = false)
         {
-            // Show all usable if not init call 
-            if (!initCall)
-            {
-                _controller.tacticsPitch.ShowUsablePlayerItemViews();
-            }
-
             // Update each zone's formation status based on the provided positions
             foreach (var zoneContainer in _controller.zoneContainerViews)
             {
@@ -117,8 +111,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             // Update the tactic after formation changes
             UpdateTacticFromActiveZones();
             
-            // Hide unused positional zones
-            _controller.tacticsPitch.HideUnusedPlayerItemViews();
+            // Show only formation zones and hide others
+            _controller.tacticsPitch.ShowFormationZonesOnly();
         }
 
         public void SwapPlayers(int index1, int index2)
