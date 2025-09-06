@@ -361,6 +361,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         {
             base.Awake();
             
+            // Try to get playerItemView if not set in inspector
+            if (playerItemView == null)
+            {
+                playerItemView = GetComponent<PlayerItemView>();
+            }
+            
             parentScrollRect = GetComponentInParent<ScrollRect>();
 
             if (Application.isMobilePlatform)
@@ -376,7 +382,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         
             // Playing selection sound should only be applicable for when Gamepad or keyboard inputs
             // are active - more on this later
-            if (!isClickHandled && !Application.isMobilePlatform)
+            if (!isClickHandled && !Application.isMobilePlatform && playerItemView?.Controller != null)
             {
                 playerItemView.Controller.PlaySelectSound();
             }
@@ -447,25 +453,33 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         private void HandleItemSelection()
         {
-            if (playerItemView.mainView.ViewMode == PlayerItemViewModeOption.Roles)
+            if (playerItemView?.mainView?.ViewMode == PlayerItemViewModeOption.Roles)
             {
-                var dialog = playerItemView.Controller.roleSelectorDialog.Clone();
-                dialog.Show();
-                Debug.Log("dialog", dialog);
+                if (playerItemView.Controller?.roleSelectorDialog != null)
+                {
+                    var dialog = playerItemView.Controller.roleSelectorDialog.Clone();
+                    dialog.Show();
+                    Debug.Log("dialog", dialog);
+                }
+                else
+                {
+                    Debug.LogWarning("Role selector dialog is not available");
+                }
             }
             else 
             {
-                Debug.Log(playerItemView.Profile.Name + " clicked!");
-                // if (playerItemView.ViewOwnerOption == PlayerItemViewOwnerOption.BenchList &&
-                //     playerItemView.HasPlayerItem)
-                // {
-                //     var dragData = playerItemView.GetDragData();
-                //     dragData.SetDragSourceViewReference(playerItemView);
-                //     // Implement your logic for removing substitute here
-                // }
+                string playerName = playerItemView?.Profile?.Name ?? "Unknown Player";
+                Debug.Log(playerName + " clicked!");
                 
                 // Handle selection/swap
-                playerItemView.Controller.HandleItemClicked(playerItemView);
+                if (playerItemView?.Controller != null)
+                {
+                    playerItemView.Controller.HandleItemClicked(playerItemView);
+                }
+                else
+                {
+                    Debug.LogWarning("PlayerItemView Controller is not available");
+                }
             }
         }
 
@@ -474,7 +488,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             if (playerItemView != null && playerItemView.Controller != null)
             {
                 int teamId = playerItemView.Controller.teamId;
-                Debug.Log($"{state}: TeamID: {teamId} Player: {playerItemView.Profile.Name}");
+                string playerName = playerItemView.Profile?.Name ?? "Unknown Player";
+                Debug.Log($"{state}: TeamID: {teamId} Player: {playerName}");
             }
             else
             {

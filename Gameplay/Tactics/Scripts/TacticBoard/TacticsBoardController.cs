@@ -48,6 +48,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         public int teamId = 419;
         
         private SelectionSwapManager selectionSwapManager;
+        public SelectionSwapManager SelectionSwapManager => selectionSwapManager;
     
         // Audio management
         [Header("Audio Settings")]
@@ -344,8 +345,17 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         // Add method to handle item clicks
         public void HandleItemClicked(PlayerItemView clickedItem)
         {
-            Debug.Log($"{clickedItem.Profile.Name} data Reached");
-            selectionSwapManager.HandleItemClicked(clickedItem);
+            string playerName = clickedItem?.Profile?.Name ?? "Empty Position";
+            Debug.Log($"{playerName} data Reached");
+            
+            if (selectionSwapManager != null)
+            {
+                selectionSwapManager.HandleItemClicked(clickedItem);
+            }
+            else
+            {
+                Debug.LogWarning("SelectionSwapManager is not initialized");
+            }
         }
     
         // Add method to clear selections (useful for keyboard shortcuts)

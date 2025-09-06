@@ -438,6 +438,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         private Dictionary<PlayerItemView, UnityEngine.UI.Outline> _activeOutlines = new Dictionary<PlayerItemView, UnityEngine.UI.Outline>();
 
         public bool HasSelection => _selectedItem != null && _selectedItem.HasPlayerItem;
+        public bool HasAnySelection => _selectedItem != null;
 
         public SelectionSwapManager(TacticsBoardController controller)
         {

@@ -111,8 +111,13 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             // Update the tactic after formation changes
             UpdateTacticFromActiveZones();
             
-            // Show only formation zones and hide others
-            _controller.tacticsPitch.ShowFormationZonesOnly();
+            // Only apply zone visibility if we're not in click and swap mode
+            // (when SelectionSwapManager has a selection, usable views should remain shown)
+            if (!_controller.SelectionSwapManager.HasAnySelection)
+            {
+                // Show only formation zones and hide others
+                _controller.tacticsPitch.ShowFormationZonesOnly();
+            }
         }
 
         public void SwapPlayers(int index1, int index2)
