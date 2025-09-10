@@ -4,14 +4,13 @@ using System.Linq;
 using UIWidgets;
 using UltimateFootballSystem.Core.Entities;
 using UnityEngine;
+using Lean.Pool;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
     public class BoardViewRefreshManager
     {
         private readonly TacticsBoardController _controller;
-        private readonly Queue<PlayerItemView> _reserveViewPool = new Queue<PlayerItemView>();
-        private const int MaxPoolSize = 10;
 
         public BoardViewRefreshManager(TacticsBoardController controller, BoardInitializationManager boardInitializationManager)
         {
@@ -118,21 +117,11 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 }
                 else
                 {
-                    // Try to get from pool first
-                    if (_reserveViewPool.Count > 0)
-                    {
-                        view = _reserveViewPool.Dequeue();
-                        view.gameObject.SetActive(true);
-                    }
-                    else
-                    {
-                        // Create new view
-                        GameObject playerItemViewObject = Object.Instantiate(_controller.playerItemViewPrefab.gameObject, _controller.reserveListSection.viewsContainer);
-                        view = playerItemViewObject.GetComponent<PlayerItemView>();
-                        
-                        view.Controller = _controller;
-                        view.ViewOwnerOption = PlayerItemViewOwnerOption.ReserveList;
-                    }
+                    // Create new view using LeanPool
+                    view = PlayerItemViewPoolManager.SpawnPlayerItemView(_controller.playerItemViewPrefab.GetComponent<PlayerItemView>(), _controller.reserveListSection.viewsContainer);
+                    
+                    view.Controller = _controller;
+                    view.ViewOwnerOption = PlayerItemViewOwnerOption.ReserveList;
                     viewsList.Add(view);
                 }
                 
@@ -148,9 +137,15 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             // Handle excess views
             if (viewsList.Count > _controller.ReservePlayersItems.Count)
             {
-                // Pool or destroy excess views
+                // Despawn excess views using LeanPool
                 var excessViews = viewsList.Skip(_controller.ReservePlayersItems.Count).ToList();
-                _controller.StartCoroutine(PoolOrDestroyViewsAsync(excessViews));
+                foreach (var view in excessViews)
+                {
+                    if (view != null)
+                    {
+                        PlayerItemViewPoolManager.DespawnPlayerItemView(view);
+                    }
+                }
                 
                 // Remove from list
                 viewsList.RemoveRange(_controller.ReservePlayersItems.Count, viewsList.Count - _controller.ReservePlayersItems.Count);
@@ -163,28 +158,6 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             _controller.reserveListSection.UpdateFormattedHeaderText(_controller.ReservePlayersItems.Count.ToString());
         }
 
-        private IEnumerator PoolOrDestroyViewsAsync(List<PlayerItemView> viewsToRemove)
-        {
-            foreach (var view in viewsToRemove)
-            {
-                if (view != null && view.gameObject != null)
-                {
-                    if (_reserveViewPool.Count < MaxPoolSize)
-                    {
-                        // Pool the view for reuse
-                        view.gameObject.SetActive(false);
-                        view.SetPlayerData(null); // Clear data
-                        _reserveViewPool.Enqueue(view);
-                    }
-                    else
-                    {
-                        // Pool is full, destroy the view
-                        Object.Destroy(view.gameObject);
-                    }
-                    yield return null; // Wait one frame between operations
-                }
-            }
-        }
 
         private void SortSubstitutes()
         {
@@ -233,15 +206,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         public void Cleanup()
         {
-            // Clean up view pool
-            while (_reserveViewPool.Count > 0)
-            {
-                var view = _reserveViewPool.Dequeue();
-                if (view != null && view.gameObject != null)
-                {
-                    Object.Destroy(view.gameObject);
-                }
-            }
+            // LeanPool handles cleanup automatically, no manual cleanup needed
         }
     }
 } 

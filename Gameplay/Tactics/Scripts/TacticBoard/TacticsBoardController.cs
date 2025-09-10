@@ -7,6 +7,7 @@ using UltimateFootballSystem.Core.TacticsEngine;
 using UltimateFootballSystem.Core.TacticsEngine.Utils;
 using UltimateFootballSystem.Core.Utils;
 using UnityEngine;
+using Lean.Pool;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
@@ -113,8 +114,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             ReservePlayersItems = new ObservableList<Core.Entities.Player>();
             
             var canvas = FindObjectOfType<Canvas>();
-            dragInfoView =
-                Instantiate(playerItemViewPrefab, canvas.gameObject.transform).GetComponent<PlayerItemView>();
+            dragInfoView = PlayerItemViewPoolManager.SpawnPlayerItemView(playerItemViewPrefab.GetComponent<PlayerItemView>(), canvas.gameObject.transform);
             dragInfoView.ViewOwnerOption = PlayerItemViewOwnerOption.DragAndDrop;
             dragInfoView.Controller = this;
             dragInfoView.gameObject.SetActive(false);

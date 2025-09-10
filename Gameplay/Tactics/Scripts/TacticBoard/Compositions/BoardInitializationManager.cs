@@ -5,6 +5,7 @@ using UltimateFootballSystem.Core.Entities;
 using UltimateFootballSystem.Core.TacticsEngine;
 using UltimateFootballSystem.Core.TacticsEngine.Utils;
 using UnityEngine;
+using Lean.Pool;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
@@ -145,20 +146,16 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         public void InitializeSubstitutePlayers()
         {
-            // Clear existing views
-            foreach (Transform child in _controller.substitutesListSection.viewsContainer)
-            {
-                Object.Destroy(child.gameObject);
-            }
+            // Clear existing views using LeanPool
+            PlayerItemViewPoolManager.DespawnAllInContainer(_controller.substitutesListSection.viewsContainer);
 
             // Initialize the SubstitutesPlayersViews array with the size of AllowedSubstitutes
             _controller.substitutesPlayersViews = new PlayerItemView[_controller.allowedSubstitutes];
 
             for (int i = 0; i < _controller.substitutesPlayersViews.Length; i++)
             {
-                // Instantiate a new PlayerItemView (assuming you have a prefab for PlayerItemView)
-                GameObject playerItemViewObject = Object.Instantiate(_controller.playerItemViewPrefab.gameObject, _controller.substitutesListSection.viewsContainer);
-                PlayerItemView playerItemView = playerItemViewObject.GetComponent<PlayerItemView>();
+                // Spawn a new PlayerItemView using LeanPool
+                PlayerItemView playerItemView = PlayerItemViewPoolManager.SpawnPlayerItemView(_controller.playerItemViewPrefab.GetComponent<PlayerItemView>(), _controller.substitutesListSection.viewsContainer);
                 
                 playerItemView.Controller = _controller;
                 playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.BenchList;
@@ -207,19 +204,15 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         public void InitializeReservePlayers()
         {
-            // Clear existing views
-            foreach (Transform child in _controller.reserveListSection.viewsContainer)
-            {
-                Object.Destroy(child.gameObject);
-            }
+            // Clear existing views using LeanPool
+            PlayerItemViewPoolManager.DespawnAllInContainer(_controller.reserveListSection.viewsContainer);
 
             _controller.reservePlayersViews = new PlayerItemView[_controller.ReservePlayersItems.Count];
 
             for (int i = 0; i < _controller.ReservePlayersItems.Count; i++)
             {
-                // Instantiate a new PlayerItemView (assuming you have a prefab for PlayerItemView)
-                GameObject playerItemViewObject = Object.Instantiate(_controller.playerItemViewPrefab.gameObject, _controller.reserveListSection.viewsContainer);
-                PlayerItemView playerItemView = playerItemViewObject.GetComponent<PlayerItemView>();
+                // Spawn a new PlayerItemView using LeanPool
+                PlayerItemView playerItemView = PlayerItemViewPoolManager.SpawnPlayerItemView(_controller.playerItemViewPrefab.GetComponent<PlayerItemView>(), _controller.reserveListSection.viewsContainer);
 
                 playerItemView.Controller = _controller;
                 playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.ReserveList;

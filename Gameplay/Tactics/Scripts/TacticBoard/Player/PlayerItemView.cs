@@ -214,6 +214,7 @@ using UltimateFootballSystem.Gameplay.Tactics.Tactics;
 using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
+using Lean.Pool;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
@@ -221,7 +222,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
     /// Player Profile View.
     /// </summary>
     [Serializable]
-    public class PlayerItemView : MonoBehaviour
+    public class PlayerItemView : MonoBehaviour, IPoolable
     {
         public TacticsBoardController Controller;
     
@@ -420,6 +421,61 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         public void FadeMainView() => mainView.FadeView();
         public void Show() => gameObject.SetActive(true); 
         public void ToggleShow(bool show) => gameObject.SetActive(show);
-        public void Hide() => gameObject.SetActive(false); 
+        public void Hide() => gameObject.SetActive(false);
+
+        // IPoolable implementation for LeanPool
+        public void OnSpawn()
+        {
+            // Reset the view state when spawned from pool
+            ResetPooledState();
+        }
+
+        public void OnDespawn()
+        {
+            // Clean up the view state before returning to pool
+            CleanupForPool();
+        }
+
+        private void ResetPooledState()
+        {
+            // Reset indices
+            StartingPlayersListIndex = -1;
+            BenchPlayersListIndex = -1;
+            FormationZonesListIndex = -1;
+            ReservePlayersListIndex = -1;
+
+            // Reset formation status
+            InUseForFormation = false;
+            
+            // Show the view and ensure it's in a clean state
+            gameObject.SetActive(true);
+        }
+
+        private void CleanupForPool()
+        {
+            // Clear player data
+            SetPlayerData(null);
+            
+            // Reset controller reference
+            Controller = null;
+            
+            // Reset parent zone reference
+            ParentPositionZoneView = null;
+            
+            // Clear any event subscriptions to prevent memory leaks
+            if (OnFormationStatusChanged != null)
+            {
+                foreach (System.Delegate d in OnFormationStatusChanged.GetInvocationList())
+                {
+                    OnFormationStatusChanged -= (System.Action<bool>)d;
+                }
+            }
+
+            // Reset tactical position
+            if (TacticalPosition != null)
+            {
+                TacticalPosition.AssignedPlayerId = null;
+            }
+        }
     }
 }
