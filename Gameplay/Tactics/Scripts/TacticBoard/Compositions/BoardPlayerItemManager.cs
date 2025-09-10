@@ -161,6 +161,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     // _controller.boardViewRefreshManager.RefreshReserveViews();
                     _controller.BoardInitializationManager.InitializeReservePlayers();
                 }
+                
+                // Sync StartingPositionPlayerMapping if starting players were affected
+                if (dropTarget.StartingPlayersListIndex >= 0 || dragged.StartingPlayersListIndex >= 0)
+                {
+                    _controller.SyncStartingPositionPlayerMappingAfterSwap();
+                }
             }
         }
 
@@ -234,6 +240,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 {
                     // _controller.boardViewRefreshManager.RefreshReserveViews();
                     _controller.BoardInitializationManager.InitializeReservePlayers();
+                }
+                
+                // Sync StartingPositionPlayerMapping if starting players were affected
+                if (selected1.StartingPlayersListIndex >= 0 || selected2.StartingPlayersListIndex >= 0)
+                {
+                    _controller.SyncStartingPositionPlayerMappingAfterSwap();
                 }
             // }
         }
