@@ -22,15 +22,18 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         public void InitializeAndSetupBoard()
         {
-            // Initialize starting player views
-            InitializeStartingPlayersViews();
+            // using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
+            // {
+                // Initialize starting player views
+                InitializeStartingPlayersViews();
 
-            // Set formation views based on starting positions mappings,
-            // the Keys are TacticalPositions (representing the formation)
-            _boardTacticManager.SetFormationViews(_controller.StartingPositionPlayerMapping.Keys.ToArray(), initCall: true);
+                _controller.SetFormation(_controller.StartingPositionPlayerMapping.Keys.ToArray(), initCall: true);
+                // Set formation views based on starting positions mappings,
+                // the Keys are TacticalPositions (representing the formation)
+                // _boardTacticManager.SetFormationViews();
 
-            // Load players into the board
-            LoadPlayers(_controller.StartingPositionPlayerMapping);
+                // Players are loaded via UI interactions or bulk selection tools
+            // }
         }
 
         public void InitializeStartingPlayersViews()
@@ -79,70 +82,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             }
         }
 
-        public void LoadPlayers(Dictionary<TacticalPositionOption, Core.Entities.Player?> startingPositionPlayersMapping)
-        {
-            // Loop through each container of zone views on the board
-            foreach (var zoneContainer in _controller.zoneContainerViews)
-            {
-                // Get all zone views (positions) within the current container
-                var zoneViews = zoneContainer.GetComponentsInChildren<PositionZoneView>(true);
-                
-                // Loop through each zone tacticsPitch to find matching tactical positions
-                foreach (var zoneView in zoneViews)
-                {
-                    // Check if the zone is in use for the formation
-                    if (zoneView.InUseForFormation)
-                    {
-                        // Find player, set whatever is return, even nulls
-                        if (startingPositionPlayersMapping.TryGetValue(zoneView.tacticalPositionOption, out var player))
-                        {
-                            // Set the player data in the zone's child player item tacticsPitch
-                            zoneView.childPlayerItemView.SetPlayerData(player);
-                        }
-                    }
-                }
-            }
-        }
-
-        public void LoadPlayersAutofill(IEnumerable<Core.Entities.Player?> players)
-        {
-            Debug.Log("LoadPlayersAutofill method called.");
-    
-            int playerIndex = 0;
-    
-            // Loop through each container of zone views on the board
-            foreach (var zoneContainer in _controller.zoneContainerViews)
-            {
-                var zoneViews = zoneContainer.GetComponentsInChildren<PositionZoneView>(true);
-                // Loop through each zone tacticsPitch and assign players or set to null if not in use
-                foreach (var zoneView in zoneViews)
-                {
-                    if (zoneView.InUseForFormation && playerIndex < players.Count())
-                    {
-                        var player = players.ElementAt(playerIndex);
-                        
-                        if (player != null)
-                        {
-                            Debug.Log($"LoadPlayersAutofill: Setting player {player.Name} in zone tacticsPitch {zoneView.name}.");
-                            zoneView.childPlayerItemView.SetPlayerData(player);
-                        }
-                        else
-                        {
-                            Debug.Log($"LoadPlayersAutofill: No player to assign to zone tacticsPitch {zoneView.name}, setting data to null.");
-                            zoneView.childPlayerItemView.SetPlayerData(null);
-                        }
-
-                        playerIndex++;
-                    }
-                    else
-                    {
-                        Debug.Log($"LoadPlayersAutofill: Zone tacticsPitch {zoneView.name} is not in use for formation, setting data to null.");
-                        zoneView.childPlayerItemView.SetPlayerData(null);
-                    }
-                }
-            }
-            Debug.Log("LoadPlayersAutofill method completed.");
-        }
+        // LoadPlayers and LoadPlayersAutofill methods removed - obsolete
+        // Players are now assigned via UI interactions or BoardSelection bulk tools
 
         public void InitializeSubstitutePlayers()
         {

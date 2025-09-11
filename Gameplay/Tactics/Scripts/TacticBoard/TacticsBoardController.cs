@@ -189,48 +189,43 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    boardTacticManager.SetFormationViews(FormationsPositions.F442);
-                    BoardInitializationManager.LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
+                    SetFormation(FormationsPositions.F442);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    boardTacticManager.SetFormationViews(FormationsPositions.F433_DM_Wide);
-                    BoardInitializationManager.LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
+                    SetFormation(FormationsPositions.F433_DM_Wide);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    boardTacticManager.SetFormationViews(FormationsPositions.F4141);
-                    BoardInitializationManager.LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
+                    SetFormation(FormationsPositions.F4141);
+
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    boardTacticManager.SetFormationViews(FormationsPositions.F4231_Wide);
-                    BoardInitializationManager.LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
+                    SetFormation(FormationsPositions.F4231_Wide);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    boardTacticManager.SetFormationViews(FormationsPositions.F3232_352);
-                    BoardInitializationManager.LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
+                    SetFormation(FormationsPositions.F3232_352);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
                 using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
                 {
-                    boardTacticManager.SetFormationViews(FormationsPositions.F343);
-                    BoardInitializationManager.LoadPlayersAutofill(StartingPositionPlayerMapping.Values);
+                    SetFormation(FormationsPositions.F343);
                 }
             }
         }
@@ -365,6 +360,71 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         }
         
         #endregion
+        
+        /// <summary>
+        /// Change formation preserving existing players with key remapping
+        /// </summary>
+        public void SetFormation(TacticalPositionOption[] newFormation, bool initCall = false)
+        {
+            // using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
+            // {
+                // 1. Preserve existing players before formation change
+                RemapStartingPositionPlayerMapping(newFormation);
+                
+                // 2. Update formation structure (shows/hides zones)
+                boardTacticManager.SetFormationViews(newFormation, initCall);
+                
+                // 3. Update UI to reflect the remapped players
+                // UpdateUIFromStartingPositionPlayerMapping();
+                boardSelectionManager.AutoPickStartingLineupFromMapping();
+            // }
+        }
+
+        /// <summary>
+        /// Remap existing players to new formation keys, preserving player assignments
+        /// </summary>
+        private void RemapStartingPositionPlayerMapping(TacticalPositionOption[] newFormation)
+        {
+            // Preserve existing players (non-null values only)
+            var existingPlayers = StartingPositionPlayerMapping.Values
+                .Where(player => player != null)
+                .ToList();
+            
+            // Clear old mapping with old keys
+            StartingPositionPlayerMapping.Clear();
+            
+            // Create new mapping with new formation keys
+            for (int i = 0; i < newFormation.Length; i++)
+            {
+                var position = newFormation[i];
+                var player = i < existingPlayers.Count ? existingPlayers[i] : null;
+                StartingPositionPlayerMapping[position] = player;
+            }
+        }
+
+        /// <summary>
+        /// Update UI views to reflect current StartingPositionPlayerMapping
+        /// </summary>
+        private void UpdateUIFromStartingPositionPlayerMapping()
+        {
+            foreach (var zoneContainer in zoneContainerViews)
+            {
+                if (zoneContainer == null) continue;
+
+                foreach (var zoneView in zoneContainer.ZoneViews)
+                {
+                    if (zoneView == null || !zoneView.InUseForFormation) continue;
+
+                    // Get player from mapping for this position
+                    var position = zoneView.tacticalPositionOption;
+                    if (StartingPositionPlayerMapping.TryGetValue(position, out var player))
+                    {
+                        // Update UI view with mapped player (or null)
+                        zoneView.childPlayerItemView.SetPlayerData(player);
+                    }
+                }
+            }
+        }
         
         public void RegisterDropdownListeners()
         {
