@@ -78,7 +78,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 using var _ = _controller.SubstitutesPlayersItems.BeginUpdate();
                 using var __ = _controller.ReservePlayersItems.BeginUpdate();
                 
-                var playersToMoveToReserves = new List<Core.Entities.Player>();
+                var playersToMoveToReserves = new List<Player>();
                 
                 // Clear starting players if requested
                 if (clearStarting)
