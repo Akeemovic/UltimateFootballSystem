@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 647662106360976885}
   - component: {fileID: 3020246875825276772}
   - component: {fileID: 8661880215781671911}
-  - component: {fileID: 2135185240780812510}
   m_Layer: 5
   m_Name: SideSelectionIndicator
   m_TagString: Untagged
@@ -90,16 +89,3 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2135185240780812510
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7589656273212448006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4210a64d2ce72e9488cf2ad174e9df5b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  picker: {fileID: 0}
