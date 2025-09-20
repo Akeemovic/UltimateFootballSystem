@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         [SerializeField] public AudioClip errorAudioClip; // Optional error sound
         [SerializeField] public AudioClip selectAudioClip;
         [SerializeField] public AudioClip clickAudioClip;
+        
+        // EVENTS
+        public event Action<PlayerItemViewModeOption> OnViewModeChanged;
         
         // Mapping tactical positions to player IDs
         public Dictionary<TacticalPositionOption, int?> StartingPositionIdMapping;
@@ -425,7 +429,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 }
             }
         }
-        
+
         public void RegisterDropdownListeners()
         {
             tacticsPitch.viewModesDropDown.onValueChanged.AddListener((int selectedIndex) =>
@@ -457,6 +461,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                             itemView.mainView.ViewMode = selectedMode;
                         }
                     }
+
+                    OnViewModeChanged?.Invoke(selectedMode);
                 }
             });
         }

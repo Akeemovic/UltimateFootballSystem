@@ -215,6 +215,7 @@ using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
 using Lean.Pool;
+using UltimateFootballSystem.Core.Entities;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
@@ -295,6 +296,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics
     
         public TacticalPosition TacticalPosition;
 
+        // EVENTS
+        public event Action<Player> OnDataChanged;
+
         private void OnEnable()
         {
             // TacticalPosition = new TacticalPosition(
@@ -361,7 +365,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         public virtual void SetPlayerData(Core.Entities.Player profile)
         {
             Profile = profile;
-            bool oldHasPlayerItem = HasPlayerItem; 
+            bool oldHasPlayerItem = HasPlayerItem;
             if (Profile != null && !string.IsNullOrEmpty(Profile.Name) && Profile.Id >= 1)
             {
                 HasPlayerItem = true;
@@ -379,14 +383,16 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 {
                     TacticalPosition.AssignedPlayerId = null;
                 }
-                Profile = new Core.Entities.Player(); 
+                Profile = new Core.Entities.Player();
                 Debug.Log("SetPlayerData: Data reaching profile tacticsPitch is null: ");
             }
-        
+
             // mainView handles all display logic now
             mainView.Show(); // Ensure the mainView is active
             mainView.UpdateView(); // This will trigger PlayerItemGeneralViewMode.UpdateView()
-            
+
+            OnDataChanged?.Invoke(Profile);
+
             if (oldHasPlayerItem != HasPlayerItem)
             {
                 OnFormationStatusChanged?.Invoke(HasPlayerItem);
