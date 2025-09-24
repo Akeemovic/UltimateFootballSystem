@@ -17,7 +17,9 @@ namespace UltimateFootballSystem.Core.TacticsEngine
 
         // Role management
         public List<TacticalRole> AvailableRoles { get; private set; } = new List<TacticalRole>();
+        public List<TacticalRoleOption> AvailableRoleOptions { get; private set; } = new List<TacticalRoleOption>();
         public TacticalRole SelectedRole { get; private set; }
+        public TacticalRoleOption SelectedRoleOption { get; private set; }
 
         // Player assignment
         public int? AssignedPlayerId { get; set; }

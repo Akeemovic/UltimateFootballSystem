@@ -21,8 +21,11 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         private void Start()
         {
-            SelectedRoleNameTextView.text = "Box-To-Box Midfielder";
-            SelectedDutyTextView.text = "Support";
+            // SelectedRoleNameTextView.text = "Box-To-Box Midfielder";
+            // SelectedDutyTextView.text = "Support";
+            
+            SelectedRoleNameTextView.text = playerItemView.TacticalPosition.SelectedRole.RoleName;
+            SelectedDutyTextView.text = playerItemView.TacticalPosition.SelectedRole.SelectedDuty.ToString();
         }
     
         public void Show()
@@ -41,8 +44,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             playerItemView = view;
             Debug.Log("Role: Team Id: " + playerItemView.Controller.teamId);
         
-            // SelectedRoleNameTextView.text = selectedTacticalRole.RoleName;
-            // SelectedDutyTextView.text = selectedTacticalRole.SelectedDuty.ToString();
+            SelectedRoleNameTextView.text = playerItemView.TacticalPosition.SelectedRole.RoleName;
+            SelectedDutyTextView.text = playerItemView.TacticalPosition.SelectedRole.SelectedDuty.ToString();
         }
 
         public void SetDefaultView()

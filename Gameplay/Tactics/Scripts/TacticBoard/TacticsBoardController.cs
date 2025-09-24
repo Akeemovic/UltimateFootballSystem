@@ -45,6 +45,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         [SerializeField] 
         public Dialog roleSelectorDialog;
+
+        public PlayerItemView SelectedPlayerItemView;
         
         public PlayerDataManager PlayerDataManager;
         public int teamId = 419;
@@ -340,12 +342,16 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 audioSource.PlayOneShot(errorAudioClip);
             }
         }
-    
+        #endregion
+        
+        #region Item Click
         // Add method to handle item clicks
         public void HandleItemClicked(PlayerItemView clickedItem)
         {
             string playerName = clickedItem?.Profile?.Name ?? "Empty Position";
             Debug.Log($"{playerName} data Reached");
+            
+            SelectedPlayerItemView = clickedItem;
             
             if (selectionSwapManager != null)
             {
@@ -362,7 +368,6 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         {
             selectionSwapManager.ClearSelection();
         }
-        
         #endregion
         
         /// <summary>
