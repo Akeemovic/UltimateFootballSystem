@@ -455,26 +455,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     // Implement your logic for the selected mode
                     Debug.Log("Selected View Mode: " + selectedMode);
 
-                    foreach (var itemView in startingPlayersViews)
-                    {
-                        itemView.mainView.ViewMode = selectedMode;
-                    }
-
-                    // No Tactical Roles for substitutes and reserve players
-                    if (selectedMode == PlayerItemViewModeOption.Roles) return;
-                    {
-                        // Continue to perform change for other tacticsPitch modes
-                        foreach (var itemView in substitutesPlayersViews)
-                        {
-                            itemView.mainView.ViewMode = selectedMode;
-                        }
-
-                        foreach (var itemView in reservePlayersViews)
-                        {
-                            itemView.mainView.ViewMode = selectedMode;
-                        }
-                    }
-
+                    // Publish event only; views will react individually
                     OnViewModeChanged?.Invoke(selectedMode);
                 }
             });

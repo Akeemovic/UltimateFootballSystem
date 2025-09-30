@@ -110,6 +110,39 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         private void Start()
         {
+            // Subscribe to controller's view mode change event
+            if (_playerItemView?.Controller != null)
+            {
+                _playerItemView.Controller.OnViewModeChanged += HandleViewModeChanged;
+            }
+        }
+
+        private void HandleViewModeChanged(PlayerItemViewModeOption newMode)
+        {
+            // Handle own view mode logic based on owner type
+            if (_playerItemView.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
+            {
+                // Starting players can show all modes including Roles
+                ViewMode = newMode;
+            }
+            else
+            {
+                // Bench and reserve players skip Roles mode
+                if (newMode != PlayerItemViewModeOption.Roles)
+                {
+                    ViewMode = newMode;
+                }
+            }
+            Debug.Log($"HandleViewModeChanged: ViewMode set to {ViewMode}");
+        }
+
+        private void OnDestroy()
+        {
+            // Unsubscribe to prevent memory leaks
+            if (_playerItemView?.Controller != null)
+            {
+                _playerItemView.Controller.OnViewModeChanged -= HandleViewModeChanged;
+            }
         }
 
         /// <summary>
