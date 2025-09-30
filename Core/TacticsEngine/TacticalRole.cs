@@ -2,114 +2,68 @@
 using System.Linq;
 using UltimateFootballSystem.Core.TacticsEngine.Instructions.Individual;
 using UltimateFootballSystem.Core.TacticsEngine.Utils;
+using UnityEngine;
 
 namespace UltimateFootballSystem.Core.TacticsEngine
 {
     /// <summary>
-    /// Abstract base class for all tactical roles
+    /// Runtime instance of a tactical role based on a TacticalRoleDefinition
     /// </summary>
-    public abstract class TacticalRole
+    public class TacticalRole
     {
-        // Core properties
-        public TacticalRoleOption RoleOption { get; protected set; }
-        public string RoleName { get; protected set; }
-        public string RoleNameShort { get; protected set; }
-        public string RoleDescription { get; protected set; }
+        // Reference to the definition asset
+        private TacticalRoleDefinition _definition;
 
-        // Available options
-        public List<TacticalPositionGroupOption> AvailablePositionGroups { get; protected set; }
-        public List<TacticalPositionOption> AvailablePositions { get; protected set; }
-        public List<TacticalDutyOption> AvailableDuties { get; protected set; }
+        // Basic Information (from definition)
+        public TacticalRoleOption RoleOption => _definition.roleOption;
+        public string RoleName => _definition.roleName;
 
-        // Selected options
-        public TacticalDutyOption SelectedDuty { get; protected set; }
-        public TacticalPositionOption SelectedPosition { get; protected set; }
+        // Position Compatibility (from definition)
+        public List<TacticalPositionOption> AvailablePositions => _definition.availablePositions;
 
-        // Role capabilities flags
-        protected bool CanAttack { get; set; }
-        protected bool CanSupport { get; set; }
-        protected bool CanDefend { get; set; }
-        protected bool CanStopper { get; set; }
-        protected bool CanCover { get; set; }
+        // Duty Options (from definition)
+        public List<TacticalDutyOption> AvailableDuties => _definition.availableDuties;
+        public TacticalDutyOption SelectedDuty { get; private set; }
 
-        // Instruction management
-        protected Dictionary<TacticalDutyOption, IndividualInstruction> _dutyInstructions;
+        // Runtime State
+        public TacticalPositionOption SelectedPosition { get; private set; }
+        public Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption> ZonesOwned { get; private set; } = new Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption>();
+
+        // Instructions (individual instruction system)
+        private IndividualInstruction _baseInstructions;
         private IndividualInstruction _customInstructions;
         private bool _hasCustomInstructions;
-        public IndividualInstruction Instructions 
-        { 
-            get 
+
+        public TacticalRole(TacticalRoleDefinition definition)
+        {
+            _definition = definition;
+
+            // Initialize base instructions based on the most common position group for this role
+            var primaryPositionGroup = GetPrimaryPositionGroup();
+            _baseInstructions = _definition.CreateIndividualInstruction(primaryPositionGroup);
+
+            // Set default selections
+            if (AvailableDuties.Count > 0)
             {
-                if (_hasCustomInstructions)
-                    return _customInstructions;
-                
-                return _dutyInstructions[SelectedDuty];
+                SelectedDuty = _definition.defaultDuty != default ? _definition.defaultDuty : AvailableDuties[0];
             }
-        }
 
-        // Zone ownership
-        public Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption> ZonesOwned { get; protected set; }
-            = new Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption>();
-
-        // Default selections
-        private TacticalDutyOption _defaultDuty;
-        private TacticalPositionOption _defaultPosition;
-
-        protected TacticalRole(
-            TacticalRoleOption roleOption,
-            string roleName,
-            string roleNameShort,
-            string roleDescription,
-            List<TacticalPositionGroupOption> availablePositionGroups,
-            List<TacticalDutyOption> availableDuties)
-        {
-            RoleOption = roleOption;
-            RoleName = roleName;
-            RoleNameShort = roleNameShort;
-            RoleDescription = roleDescription;
-
-            // Initialize positions
-            InitializePositions(availablePositionGroups);
-
-            // Initialize duties
-            InitializeDuties(availableDuties);
-
-            // Initialize duty instructions
-            InitializeDutyInstructions();
-        }
-
-        // Initialize positions based on available position groups
-        private void InitializePositions(List<TacticalPositionGroupOption> availablePositionGroups)
-        {
-            AvailablePositionGroups = availablePositionGroups;
-            AvailablePositions = TacticalPositionUtils.GetPositionOptionsForGroupAll(AvailablePositionGroups.ToArray());
-
-            _defaultPosition = AvailablePositions.FirstOrDefault();
-            SetSelectedPosition(_defaultPosition);
-        }
-
-        // Initialize duties and capability flags
-        private void InitializeDuties(List<TacticalDutyOption> availableDuties)
-        {
-            AvailableDuties = availableDuties;
-            CanAttack = AvailableDuties.Contains(TacticalDutyOption.Attack);
-            CanSupport = AvailableDuties.Contains(TacticalDutyOption.Support);
-            CanDefend = AvailableDuties.Contains(TacticalDutyOption.Defend);
-            CanStopper = AvailableDuties.Contains(TacticalDutyOption.Stopper);
-            CanCover = AvailableDuties.Contains(TacticalDutyOption.Cover);
-
-            _defaultDuty = AvailableDuties.FirstOrDefault();
-            SetSelectedDuty(_defaultDuty);
-        }
-
-        // Initialize duty instructions
-        private void InitializeDutyInstructions()
-        {
-            _dutyInstructions = new Dictionary<TacticalDutyOption, IndividualInstruction>();
-            foreach (var duty in AvailableDuties)
+            if (AvailablePositions.Count > 0)
             {
-                _dutyInstructions[duty] = CreateDefaultInstructionsForDuty(duty);
+                SelectedPosition = AvailablePositions[0];
             }
+
+            UpdateZonesOwned();
+        }
+
+        private TacticalPositionGroupOption GetPrimaryPositionGroup()
+        {
+            // Get the position group of the first available position
+            if (AvailablePositions.Count > 0)
+            {
+                return TacticalPositionUtils.GetGroupForPosition(AvailablePositions[0]);
+            }
+            return TacticalPositionGroupOption.M_Center; // Default fallback
         }
 
         // Set selected duty if valid
@@ -118,13 +72,8 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             if (AvailableDuties.Contains(duty))
             {
                 SelectedDuty = duty;
+                UpdateZonesOwned();
             }
-            else
-            {
-                SelectedDuty = _defaultDuty;
-            }
-            // Update zones whenever duty changes
-            UpdateZonesOwned();
         }
 
         // Set selected position if valid
@@ -133,25 +82,17 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             if (AvailablePositions.Contains(position))
             {
                 SelectedPosition = position;
+                UpdateZonesOwned();
             }
-            else
-            {
-                SelectedPosition = _defaultPosition;
-            }
-            // Update zones whenever position changes
-            UpdateZonesOwned();
         }
 
-        // Get default duty
-        public TacticalDutyOption GetDefaultDuty() => _defaultDuty;
-
-        // Get default position
-        public TacticalPositionOption GetDefaultPosition() => _defaultPosition;
-
         // Update zones owned by this role
-        protected void UpdateZonesOwned()
+        private void UpdateZonesOwned()
         {
-            ZonesOwned = GetAvailableZones(SelectedPosition, SelectedDuty);
+            if (_definition != null)
+            {
+                ZonesOwned = _definition.GetZonesForPositionAndDuty(SelectedPosition, SelectedDuty);
+            }
         }
 
         // Get availability level for a specific zone
@@ -160,29 +101,45 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             return ZonesOwned.TryGetValue(zone, out var level) ? level : TacticalZoneAvailabilityOption.None;
         }
 
-        // Abstract method to be implemented by each role
-        public abstract Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption> GetAvailableZones(
-            TacticalPositionOption position,
-            TacticalDutyOption duty);
-
         // Create a copy of this role
-        public abstract TacticalRole Clone();
+        public TacticalRole Clone()
+        {
+            var clone = new TacticalRole(_definition);
+            clone.SetSelectedPosition(SelectedPosition);
+            clone.SetSelectedDuty(SelectedDuty);
 
-        // Protected methods for instruction management
-        protected abstract IndividualInstruction CreateDefaultInstructionsForDuty(TacticalDutyOption duty);
+            // Copy any custom instructions if they exist
+            if (_hasCustomInstructions)
+            {
+                // Deep copy custom instructions
+                clone._customInstructions = _customInstructions; // Note: might need deep copy depending on implementation
+                clone._hasCustomInstructions = true;
+            }
 
-        protected void SetCustomInstructions(IndividualInstruction instructions)
+            return clone;
+        }
+
+        // Custom instruction support
+        public void SetCustomInstructions(IndividualInstruction instructions)
         {
             _customInstructions = instructions;
             _hasCustomInstructions = true;
         }
 
-        protected void ClearCustomInstructions()
+        public void ClearCustomInstructions()
         {
             _customInstructions = null;
             _hasCustomInstructions = false;
         }
 
-        protected bool HasCustomInstructions => _hasCustomInstructions;
+        public bool HasCustomInstructions => _hasCustomInstructions;
+
+        public IndividualInstruction GetInstructions()
+        {
+            if (_hasCustomInstructions)
+                return _customInstructions;
+
+            return _baseInstructions;
+        }
     }
 }

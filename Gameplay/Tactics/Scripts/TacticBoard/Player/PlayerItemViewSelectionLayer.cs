@@ -1,4 +1,7 @@
 using System;
+using System.Linq;
+using UIWidgets;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -133,13 +136,57 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 return;
             }
 
+            // Select player item  - OLD: Handle selection/swap
+            // if (playerItemView?.Controller != null)
+            // {
+            //     playerItemView.Controller.HandleItemClicked(playerItemView);
+            // }
+            // else
+            // {
+            //     Debug.LogWarning("PlayerItemView Controller is not available");
+            //     return;
+            // }
+            
             if (playerItemView?.mainView?.ViewMode == PlayerItemViewModeOption.Roles)
             {
                 if (playerItemView.Controller?.roleSelectorDialog != null)
+                // if (playerItemView.Controller?.roleSelectorDialogContainer != null)
                 {
+                    playerItemView.Controller.SelectedPlayerItemView = playerItemView;
+                    
                     var dialog = playerItemView.Controller.roleSelectorDialog.Clone();
-                    dialog.Show();
+                    dialog.Show(modal: true,  onClose: () =>
+                    {
+                        Destroy(dialog.gameObject);
+                    });
                     Debug.Log("dialog", dialog);
+                    
+                    // Method 2
+                    // var dialog = playerItemView.Controller.roleSelectorDialog;
+                    // dialog.gameObject.SetActive(!dialog.gameObject.activeInHierarchy);
+                    // if (!dialog.gameObject.activeInHierarchy)
+                    // {
+                    //     dialog.GetComponent<TacticalRoleSelector>().CleanupDialog();
+                    // }
+                    
+                    
+                    // var pos = playerItemView.Controller.SelectedPlayerItemView.TacticalPosition;
+                    // var availableRoleOptions = playerItemView.Controller.SelectedPlayerItemView.TacticalPosition.AvailableRoles
+                    //     .Select(r => r.RoleOption).ToList();
+                    // Debug.Log("roles available: " + availableRoleOptions.Count + " pos: " + pos);
+                    
+                    // // Method 3
+                    // var roleSelectorDialog = playerItemView.Controller.roleSelectorDialogContainer.GetComponentInChildren<TacticalRoleSelector>();
+                    // if (roleSelectorDialog == null)
+                    // {
+                    //     // spawn dialog
+                    //     Instantiate(playerItemView.Controller.roleSelectorDialogPrefab, playerItemView.Controller.roleSelectorDialogContainer.transform);
+                    // }
+                    // else
+                    // {
+                    //     // despawn dialog
+                    //     Destroy(roleSelectorDialog.gameObject);
+                    // }
                 }
                 else
                 {

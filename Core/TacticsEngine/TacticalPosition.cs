@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UltimateFootballSystem.Core.Entities;
+using UltimateFootballSystem.Core.TacticsEngine.Instructions.Individual;
 using UltimateFootballSystem.Core.TacticsEngine.Utils;
 
 namespace UltimateFootballSystem.Core.TacticsEngine
@@ -41,7 +42,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             PositionGroup = positionGroup;
             PositionType = TacticalPositionUtils.GetTypeForPosition(Position);
 
-            // Filter roles that are compatible with this position
+            // Filter roles that are compatible with this position and clone them
             foreach (var role in availableRoles)
             {
                 if (role.AvailablePositions.Contains(Position))
@@ -50,6 +51,7 @@ namespace UltimateFootballSystem.Core.TacticsEngine
                     TacticalRole roleClone = role.Clone();
                     roleClone.SetSelectedPosition(Position);
                     AvailableRoles.Add(roleClone);
+                    AvailableRoleOptions.Add(roleClone.RoleOption);
                 }
             }
 
@@ -57,35 +59,129 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             if (AvailableRoles.Any())
             {
                 SelectedRole = AvailableRoles.First();
+                SelectedRoleOption = SelectedRole.RoleOption;
+            }
+        }
+
+        // Alternative constructor that uses RoleManager directly
+        public TacticalPosition(
+            TacticalPositionGroupOption positionGroup,
+            TacticalPositionOption position)
+        {
+            Position = position;
+            PositionGroup = positionGroup;
+            PositionType = TacticalPositionUtils.GetTypeForPosition(Position);
+
+            // Get available roles for this position from RoleManager
+            var availableRoleOptions = RoleManager.GetRolesForPosition(position);
+            AvailableRoleOptions = availableRoleOptions;
+
+            UnityEngine.Debug.Log($"TacticalPosition: Position {position} received {availableRoleOptions.Count} role options from RoleManager");
+
+            foreach (var roleOption in availableRoleOptions)
+            {
+                var role = RoleManager.GetRole(roleOption);
+                if (role != null)
+                {
+                    role.SetSelectedPosition(Position);
+                    AvailableRoles.Add(role);
+                    UnityEngine.Debug.Log($"TacticalPosition: Successfully added role {role.RoleName} for position {position}");
+                }
+                else
+                {
+                    UnityEngine.Debug.LogWarning($"TacticalPosition: RoleManager.GetRole returned null for {roleOption}");
+                }
+            }
+
+            // Set default role if available
+            if (AvailableRoles.Any())
+            {
+                SelectedRole = AvailableRoles.First();
+                SelectedRoleOption = SelectedRole.RoleOption;
+                UnityEngine.Debug.Log($"TacticalPosition: Set default role {SelectedRole.RoleName} for position {position}");
+            }
+            else
+            {
+                UnityEngine.Debug.LogError($"TacticalPosition: No roles available for position {position} - SelectedRole will be null");
             }
         }
 
         // NEW METHOD: Set selected role by role type - more convenient API
-        public bool SetRole(TacticalRoleOption roleType)
+        public bool SetRoleOption(TacticalRoleOption roleType)
         {
             var matchingRole = AvailableRoles.FirstOrDefault(r => r.RoleOption == roleType);
             if (matchingRole != null)
             {
                 SelectedRole = matchingRole;
+                SelectedRoleOption = roleType;
                 return true;
             }
             return false;
         }
 
-        // Original method kept for backward compatibility
-        public void SetSelectedRole(TacticalRole role)
-        {
-            if (AvailableRoles.Any(r => r.RoleOption == role.RoleOption))
-            {
-                var matchingRole = AvailableRoles.First(r => r.RoleOption == role.RoleOption);
-                SelectedRole = matchingRole;
-            }
-        }
-
         // Set selected duty for the current role
-        public void SetSelectedDuty(TacticalDutyOption duty)
+        public void SetDutyOption(TacticalDutyOption duty)
         {
             SelectedRole?.SetSelectedDuty(duty);
+        }
+
+        // Get current selected duty
+        public TacticalDutyOption GetSelectedDutyOption()
+        {
+            return SelectedRole?.SelectedDuty ?? default;
+        }
+
+        // Get available duties for the currently selected role
+        public List<TacticalDutyOption> GetAvailableDuties()
+        {
+            return SelectedRole?.AvailableDuties ?? new List<TacticalDutyOption>();
+        }
+
+        // Get default duty for the currently selected role
+        public TacticalDutyOption GetDefaultDutyOption()
+        {
+            if (SelectedRole?.AvailableDuties.Count > 0)
+            {
+                // Return the first available duty as default
+                return SelectedRole.AvailableDuties[0];
+            }
+            return default;
+        }
+
+        // Get individual instructions from the selected role
+        public IndividualInstruction GetRoleInstructions()
+        {
+            return SelectedRole?.GetInstructions();
+        }
+
+        // Get zone ownership from the selected role
+        public Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption> GetRoleZones()
+        {
+            return SelectedRole?.ZonesOwned ?? new Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption>();
+        }
+
+        // Check if a specific zone is available for this position's role
+        public TacticalZoneAvailabilityOption GetZoneAvailability(TacticalZoneOption zone)
+        {
+            return SelectedRole?.GetZoneAvailability(zone) ?? TacticalZoneAvailabilityOption.None;
+        }
+
+        // Check if role supports custom instructions
+        public bool HasCustomInstructions()
+        {
+            return SelectedRole?.HasCustomInstructions ?? false;
+        }
+
+        // Set custom instructions for the selected role (for future user modifications)
+        public void SetCustomInstructions(IndividualInstruction instructions)
+        {
+            SelectedRole?.SetCustomInstructions(instructions);
+        }
+
+        // Clear custom instructions and revert to default
+        public void ClearCustomInstructions()
+        {
+            SelectedRole?.ClearCustomInstructions();
         }
 
         // Assign a player to this position

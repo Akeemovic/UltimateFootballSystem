@@ -59,13 +59,10 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                             playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.StartingList;
                             playerItemView.StartingPlayersListIndex = index;
                             var tacticalPositionOption = zoneView.tacticalPositionOption;
-                            // Create an instance of the tactical position to manage positions related roles & duties 
+                            // Create an instance of the tactical position to manage positions related roles & duties
                             playerItemView.TacticalPosition = new TacticalPosition(
                                 TacticalPositionUtils.GetGroupForPosition(tacticalPositionOption),
-                                tacticalPositionOption,
-                                RoleManager.GetRolesForPosition(tacticalPositionOption)
-                                    .Select(roleOption => RoleManager.GetRole(roleOption))
-                                    .ToList()
+                                tacticalPositionOption
                             );
                         }
                         index++;

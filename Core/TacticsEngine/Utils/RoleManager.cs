@@ -1,55 +1,98 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using UltimateFootballSystem.Core.TacticsEngine.TacticalRoles;
+using UnityEngine;
 
 namespace UltimateFootballSystem.Core.TacticsEngine.Utils
 {
     /// <summary>
-    /// Factory class for creating and managing all available tactical roles
+    /// MonoBehaviour singleton for managing tactical role definitions and creating runtime instances
     /// </summary>
-    public static class RoleManager
+    public class RoleManager : MonoBehaviour
     {
-        private static readonly Dictionary<TacticalRoleOption, TacticalRole> _rolePrototypes =
-            new Dictionary<TacticalRoleOption, TacticalRole>();
-
-        static RoleManager()
+        private static RoleManager _instance;
+        public static RoleManager Instance
         {
-            RegisterAllRoles();
-        }
-
-        private static void RegisterAllRoles()
-        {
-            // Register concrete role implementations when available
-            try
+            get
             {
-                // Use these when you have the actual classes implemented
-                RegisterRole(new Goalkeeper());
-                RegisterRole(new Winger());
-                RegisterRole(new BoxToBoxMidfielder());
-                RegisterRole(new FalseNine());
-            }
-            catch (Exception)
-            {
-                // Use these when you have the actual classes implemented
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<RoleManager>();
+                    if (_instance == null)
+                    {
+                        var go = new GameObject("RoleManager");
+                        _instance = go.AddComponent<RoleManager>();
+                        DontDestroyOnLoad(go);
+                    }
+                }
+                return _instance;
             }
         }
 
-        private static void RegisterRole(TacticalRole role)
+        [Header("Role Definitions")]
+        [SerializeField] private List<TacticalRoleDefinition> roleDefinitions = new List<TacticalRoleDefinition>();
+
+        private Dictionary<TacticalRoleOption, TacticalRoleDefinition> _roleDefinitionLookup;
+
+        private void Awake()
         {
-            _rolePrototypes[role.RoleOption] = role;
+            if (_instance == null)
+            {
+                _instance = this;
+                DontDestroyOnLoad(gameObject);
+                Debug.Log("RoleManager: Instance created and initializing");
+                InitializeRoleDefinitions();
+            }
+            else if (_instance != this)
+            {
+                Debug.Log("RoleManager: Duplicate instance destroyed");
+                Destroy(gameObject);
+            }
         }
 
-        // Get a clone of a role by type
+        private void InitializeRoleDefinitions()
+        {
+            _roleDefinitionLookup = new Dictionary<TacticalRoleOption, TacticalRoleDefinition>();
+
+            Debug.Log($"RoleManager: Initializing with {roleDefinitions.Count} role definitions");
+
+            foreach (var definition in roleDefinitions)
+            {
+                if (definition != null)
+                {
+                    _roleDefinitionLookup[definition.roleOption] = definition;
+                    Debug.Log($"RoleManager: Added role {definition.roleOption} ({definition.roleName}) with {definition.availablePositions.Count} positions");
+                }
+                else
+                {
+                    Debug.LogWarning("RoleManager: Found null role definition in list");
+                }
+            }
+
+            Debug.Log($"RoleManager: Initialization complete. {_roleDefinitionLookup.Count} roles loaded");
+        }
+
+        // Get a new runtime instance of a role by type
         public static TacticalRole GetRole(TacticalRoleOption type)
         {
-            return _rolePrototypes.TryGetValue(type, out var role) ? role.Clone() : null;
+            if (Instance._roleDefinitionLookup.TryGetValue(type, out var definition))
+            {
+                return new TacticalRole(definition);
+            }
+
+            Debug.LogWarning($"Role definition for {type} not found in RoleManager");
+            return null;
         }
 
-        // Get all available roles
+        // Get all available roles as runtime instances
         public static List<TacticalRole> GetAllRoles()
         {
-            return _rolePrototypes.Values.Select(r => r.Clone()).ToList();
+            var roles = new List<TacticalRole>();
+            foreach (var definition in Instance._roleDefinitionLookup.Values)
+            {
+                roles.Add(new TacticalRole(definition));
+            }
+            return roles;
         }
 
         // Get all roles as a collection of role objects for use in UI
@@ -63,23 +106,61 @@ namespace UltimateFootballSystem.Core.TacticsEngine.Utils
         {
             var result = new List<TacticalRoleOption>();
 
-            foreach (var role in _rolePrototypes.Values)
+            Debug.Log($"RoleManager: Getting roles for position {position}");
+
+            foreach (var definition in Instance._roleDefinitionLookup.Values)
             {
-                if (role.AvailablePositions.Contains(position))
+                bool roleAvailable = false;
+
+                // Check direct position assignment (legacy)
+                if (definition.availablePositions.Contains(position))
                 {
-                    result.Add(role.RoleOption);
+                    roleAvailable = true;
+                    Debug.Log($"RoleManager: Found role {definition.roleOption} for position {position} (direct match)");
+                }
+
+                // Check position groups (primary method)
+                foreach (var positionGroup in definition.availablePositionGroups)
+                {
+                    var positionsInGroup = TacticalPositionUtils.GetPositionsForGroup(positionGroup);
+                    if (positionsInGroup.Contains(position))
+                    {
+                        roleAvailable = true;
+                        Debug.Log($"RoleManager: Found role {definition.roleOption} for position {position} (via group {positionGroup})");
+                        break;
+                    }
+                }
+
+                if (roleAvailable)
+                {
+                    result.Add(definition.roleOption);
                 }
             }
 
+            Debug.Log($"RoleManager: Found {result.Count} roles for position {position}: {string.Join(", ", result)}");
             return result;
         }
 
         // Check if a role is available for a position
         public static bool IsRoleAvailableForPosition(TacticalRoleOption roleType, TacticalPositionOption position)
         {
-            if (_rolePrototypes.TryGetValue(roleType, out var role))
+            if (Instance._roleDefinitionLookup.TryGetValue(roleType, out var definition))
             {
-                return role.AvailablePositions.Contains(position);
+                // Check direct position assignment (legacy)
+                if (definition.availablePositions.Contains(position))
+                {
+                    return true;
+                }
+
+                // Check position groups (primary method)
+                foreach (var positionGroup in definition.availablePositionGroups)
+                {
+                    var positionsInGroup = TacticalPositionUtils.GetPositionsForGroup(positionGroup);
+                    if (positionsInGroup.Contains(position))
+                    {
+                        return true;
+                    }
+                }
             }
             return false;
         }
@@ -87,9 +168,9 @@ namespace UltimateFootballSystem.Core.TacticsEngine.Utils
         // Get available duties for a role type
         public static List<TacticalDutyOption> GetAvailableDutiesForRole(TacticalRoleOption roleType)
         {
-            if (_rolePrototypes.TryGetValue(roleType, out var role))
+            if (Instance._roleDefinitionLookup.TryGetValue(roleType, out var definition))
             {
-                return new List<TacticalDutyOption>(role.AvailableDuties);
+                return new List<TacticalDutyOption>(definition.availableDuties);
             }
             return new List<TacticalDutyOption>();
         }
@@ -100,14 +181,36 @@ namespace UltimateFootballSystem.Core.TacticsEngine.Utils
             TacticalPositionOption position,
             TacticalDutyOption duty)
         {
-            if (_rolePrototypes.TryGetValue(roleType, out var role))
+            if (Instance._roleDefinitionLookup.TryGetValue(roleType, out var definition))
             {
-                var roleClone = role.Clone();
-                roleClone.SetSelectedPosition(position);
-                roleClone.SetSelectedDuty(duty);
-                return roleClone.ZonesOwned;
+                return definition.GetZonesForPositionAndDuty(position, duty);
             }
             return new Dictionary<TacticalZoneOption, TacticalZoneAvailabilityOption>();
+        }
+
+        // Editor helper methods
+        public void AddRoleDefinition(TacticalRoleDefinition definition)
+        {
+            if (definition != null && !roleDefinitions.Contains(definition))
+            {
+                roleDefinitions.Add(definition);
+                _roleDefinitionLookup[definition.roleOption] = definition;
+            }
+        }
+
+        public void RemoveRoleDefinition(TacticalRoleDefinition definition)
+        {
+            if (definition != null)
+            {
+                roleDefinitions.Remove(definition);
+                _roleDefinitionLookup?.Remove(definition.roleOption);
+            }
+        }
+
+        // Get all role definitions (for editor/debugging)
+        public List<TacticalRoleDefinition> GetAllRoleDefinitions()
+        {
+            return new List<TacticalRoleDefinition>(roleDefinitions);
         }
     }
 }

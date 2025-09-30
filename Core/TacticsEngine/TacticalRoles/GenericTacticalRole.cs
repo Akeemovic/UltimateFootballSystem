@@ -5,8 +5,11 @@ using UltimateFootballSystem.Core.TacticsEngine.Instructions.Individual;
 namespace UltimateFootballSystem.Core.TacticsEngine.TacticalRoles
 {
     /// <summary>
-    /// Generic implementation of TacticalRole for prototyping
+    /// TEMPORARILY DISABLED - These classes are now replaced by TacticalRoleDefinition ScriptableObjects
+    /// Use the new RoleManager to create role definition assets instead of these hardcoded classes
     /// </summary>
+
+    /*
     public class GenericTacticalRole : TacticalRole
     {
         public GenericTacticalRole(
@@ -231,4 +234,5 @@ namespace UltimateFootballSystem.Core.TacticsEngine.TacticalRoles
         {
         }
     }
+    */
 }

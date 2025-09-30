@@ -298,6 +298,8 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         // EVENTS
         public event Action<Player> OnDataChanged;
+        public event Action<TacticalRoleOption> OnRoleChanged;
+        public event Action<TacticalDutyOption> OnDutyChanged;
 
         private void OnEnable()
         {
@@ -482,6 +484,17 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             {
                 TacticalPosition.AssignedPlayerId = null;
             }
+        }
+
+        // METHODS TO TRIGGER EVENTS
+        public void TriggerRoleChanged(TacticalRoleOption newRole)
+        {
+            OnRoleChanged?.Invoke(newRole);
+        }
+
+        public void TriggerDutyChanged(TacticalDutyOption newDuty)
+        {
+            OnDutyChanged?.Invoke(newDuty);
         }
     }
 }

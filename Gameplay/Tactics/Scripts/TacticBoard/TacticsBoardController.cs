@@ -43,8 +43,16 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         // [SerializeField]
         public PlayerItemView[] reservePlayersViews;
 
-        [SerializeField] 
+        // [SerializeField] 
         public Dialog roleSelectorDialog;
+        
+        // [SerializeField] 
+        // public GameObject roleSelectorDialog;
+        //
+        // [SerializeField] 
+        // public GameObject roleSelectorDialogContainer;
+        // [SerializeField] 
+        // public GameObject roleSelectorDialogPrefab;
 
         public PlayerItemView SelectedPlayerItemView;
         

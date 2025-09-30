@@ -1127,6 +1127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SelectedRoleNameTextView: {fileID: 8597550935280012366}
   SelectedDutyTextView: {fileID: 6192239346159794366}
+  playerItemView: {fileID: 3422317845766635638}
 --- !u!222 &3081788616949002261
 CanvasRenderer:
   m_ObjectHideFlags: 0

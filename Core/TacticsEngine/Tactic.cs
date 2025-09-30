@@ -51,11 +51,8 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             foreach (var posOption in formation)
             {
                 var posGroup = TacticalPositionUtils.GetGroupForPosition(posOption);
-                var availableRoles = RoleManager.GetRolesForPosition(posOption)
-                    .Select(r => RoleManager.GetRole(r))
-                    .ToList();
-
-                var position = new TacticalPosition(posGroup, posOption, availableRoles);
+                // Use the new simplified constructor that gets roles from RoleManager directly
+                var position = new TacticalPosition(posGroup, posOption);
                 tactic.ActivePositions.Add(position);
             }
 
@@ -130,11 +127,8 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             foreach (var posOption in newFormation)
             {
                 var posGroup = TacticalPositionUtils.GetGroupForPosition(posOption);
-                var roles = RoleManager.GetRolesForPosition(posOption)
-                    .Select(r => RoleManager.GetRole(r))
-                    .ToList();
-
-                var position = new TacticalPosition(posGroup, posOption, roles);
+                // Use the new simplified constructor
+                var position = new TacticalPosition(posGroup, posOption);
 
                 // Restore player if position matches
                 if (oldAssignments.TryGetValue(posOption, out var player))
@@ -145,11 +139,11 @@ namespace UltimateFootballSystem.Core.TacticsEngine
                 // Restore role and duty if position matches
                 if (oldRoles.TryGetValue(posOption, out var roleType))
                 {
-                    position.SetRole(roleType);
+                    position.SetRoleOption(roleType);
 
                     if (oldDuties.TryGetValue(posOption, out var duty))
                     {
-                        position.SetSelectedDuty(duty);
+                        position.SetDutyOption(duty);
                     }
                 }
 
@@ -212,17 +206,14 @@ namespace UltimateFootballSystem.Core.TacticsEngine
             foreach (var posData in data.Positions)
             {
                 var posGroup = TacticalPositionUtils.GetGroupForPosition(posData.Position);
-                var roles = RoleManager.GetRolesForPosition(posData.Position)
-                    .Select(r => RoleManager.GetRole(r))
-                    .ToList();
-
-                var position = new TacticalPosition(posGroup, posData.Position, roles);
+                // Use the new simplified constructor
+                var position = new TacticalPosition(posGroup, posData.Position);
 
                 // Set role and duty
                 if (posData.RoleType != default)
                 {
-                    position.SetRole(posData.RoleType);
-                    position.SetSelectedDuty(posData.Duty);
+                    position.SetRoleOption(posData.RoleType);
+                    position.SetDutyOption(posData.Duty);
                 }
 
                 // Player assignment would happen later when players are loaded
