@@ -38,14 +38,28 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             {
                 transition = Transition.None;
             }
+            
+            // For Inital RUN
+            // Remove selectability for non-starting list items with no valid player
+            RemoveSelectabilityForNonStartingListItemsWithNoValidPlayer();
+
+            // Subscribe to OnDataChanged event
+            playerItemView.OnDataChanged += (player) =>
+            {
+                // Update selectability for non-starting list items based on player presence
+                RemoveSelectabilityForNonStartingListItemsWithNoValidPlayer();
+            };
         }
 
-        private void Update()
+        private void RemoveSelectabilityForNonStartingListItemsWithNoValidPlayer()
         {
             // Ensure non-starting list items are selectable only if they have a player
+            // ie. only non-starting list items should be selectable whether they have a player or not
+            // Because all starting item view are needed for formation changes
             if (playerItemView.ViewOwnerOption != PlayerItemViewOwnerOption.StartingList)
             {
                 SetSelectability(playerItemView.HasPlayerItem);
+                // SetSelectability(player == null || player.Id <= 0); 
             }
         }
 
