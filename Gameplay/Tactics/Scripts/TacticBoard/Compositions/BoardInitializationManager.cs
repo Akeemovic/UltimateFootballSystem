@@ -9,6 +9,10 @@ using Lean.Pool;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
+    /// <summary>
+    /// Handles the initialization and setup of the tactics board components.
+    /// Focuses on structural setup - PlayerItemView handles its own tactical position initialization.
+    /// </summary>
     public class BoardInitializationManager
     {
         private readonly TacticsBoardController _controller;
@@ -52,18 +56,23 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                         {
                             _controller.startingPlayersViews[index] = playerItemView;
                             
-                            // Register for formation status changes
+                            // // Set up basic properties
+                            // playerItemView.Controller = _controller;   
+                            // playerItemView.ParentPositionZoneView = zoneView;
+                            // playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.StartingList;
+                            // playerItemView.StartingPlayersListIndex = index;
+                            //
+                            // // Initialize tactical position after all properties are set
+                            // playerItemView.InitializeTacticalPosition();
+                            //
+                            // // Register for formation status changes after initialization
+                            // playerItemView.OnFormationStatusChanged += _boardTacticManager.HandleFormationStatusChanged;
+                            
+                            // Initialize 
+                            playerItemView.Initialize(_controller, zoneView, PlayerItemViewOwnerOption.StartingList, index);
+                            
+                            // Register for formation status changes after initialization
                             playerItemView.OnFormationStatusChanged += _boardTacticManager.HandleFormationStatusChanged;
-                            playerItemView.Controller = _controller;   
-                            playerItemView.ParentPositionZoneView = zoneView;
-                            playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.StartingList;
-                            playerItemView.StartingPlayersListIndex = index;
-                            var tacticalPositionOption = zoneView.tacticalPositionOption;
-                            // Create an instance of the tactical position to manage positions related roles & duties
-                            playerItemView.TacticalPosition = new TacticalPosition(
-                                TacticalPositionUtils.GetGroupForPosition(tacticalPositionOption),
-                                tacticalPositionOption
-                            );
                         }
                         index++;
                     }
@@ -95,36 +104,20 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 // Spawn a new PlayerItemView using LeanPool
                 PlayerItemView playerItemView = PlayerItemViewPoolManager.SpawnPlayerItemView(_controller.playerItemViewPrefab.GetComponent<PlayerItemView>(), _controller.substitutesListSection.viewsContainer);
                 
-                playerItemView.Controller = _controller;
-                playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.BenchList;
-                // Register for formation status changes
-                playerItemView.OnFormationStatusChanged += _boardTacticManager.HandleFormationStatusChanged;
-                // if (i < _controller.SubstitutesPlayersItems.Count && _controller.SubstitutesPlayersItems[i] != null)
-                // {
-                //     // Set data for the player profile tacticsPitch if the item exists
-                //     playerItemView.SetPlayerData(_controller.SubstitutesPlayersItems[i]);
-                // }
-                // else
-                // {
-                //     // Show placeholder and hide the main tacticsPitch if the player item is null or out of range
-                //     playerItemView.placeholderView.Show();
-                //     playerItemView.mainView.Hide();
-                // }
+                // Set up basic properties
+                // playerItemView.Controller = _controller;
+                // playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.BenchList;
                 // playerItemView.BenchPlayersListIndex = i;
                 // _controller.substitutesPlayersViews[i] = playerItemView;
-                // playerItemView.placeholderView.UpdatePositionText();
-                
-                if (i < _controller.SubstitutesPlayersItems.Count && _controller.SubstitutesPlayersItems[i] != null)
-                {
-                    // Set data for the player profile tacticsPitch if the item exists
-                    playerItemView.SetPlayerData(_controller.SubstitutesPlayersItems[i]);
-                }
-                else
-                {
-                    playerItemView.SetPlayerData(null);
-                }
-                playerItemView.BenchPlayersListIndex = i;
+                playerItemView.Initialize(_controller, null, PlayerItemViewOwnerOption.BenchList, i);
                 _controller.substitutesPlayersViews[i] = playerItemView;
+                
+                // Set player data (handles null gracefully)
+                var playerData = (i < _controller.SubstitutesPlayersItems.Count) ? _controller.SubstitutesPlayersItems[i] : null;
+                playerItemView.SetPlayerData(playerData);
+                
+                // Register for formation status changes after setup
+                playerItemView.OnFormationStatusChanged += _boardTacticManager.HandleFormationStatusChanged;
                 
                 // Logging to verify correct initialization
                 string playerName = playerItemView.HasPlayerItem ? playerItemView.Profile.Name : "Placeholder";
@@ -152,12 +145,16 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 // Spawn a new PlayerItemView using LeanPool
                 PlayerItemView playerItemView = PlayerItemViewPoolManager.SpawnPlayerItemView(_controller.playerItemViewPrefab.GetComponent<PlayerItemView>(), _controller.reserveListSection.viewsContainer);
 
-                playerItemView.Controller = _controller;
-                playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.ReserveList;
-                // Set data for the player profile tacticsPitch
-                playerItemView.SetPlayerData(_controller.ReservePlayersItems[i]);
-                playerItemView.ReservePlayersListIndex = i;
+                // Set up basic properties
+                // playerItemView.Controller = _controller;
+                // playerItemView.ViewOwnerOption = PlayerItemViewOwnerOption.ReserveList;
+                // playerItemView.ReservePlayersListIndex = i;
+                // _controller.reservePlayersViews[i] = playerItemView;
+                playerItemView.Initialize(_controller, null, PlayerItemViewOwnerOption.ReserveList, i);
                 _controller.reservePlayersViews[i] = playerItemView;
+                
+                // Set player data
+                playerItemView.SetPlayerData(_controller.ReservePlayersItems[i]);
 
                 Debug.Log($"Reserve player {playerItemView.Profile.Name} initialized at index {i}");
             }

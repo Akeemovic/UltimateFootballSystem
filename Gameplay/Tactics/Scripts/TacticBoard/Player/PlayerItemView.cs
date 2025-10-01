@@ -106,36 +106,13 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         private void Awake()
         {
-            if (ParentPositionZoneView != null)
-            {
-                TacticalPositionOption = ParentPositionZoneView.tacticalPositionOption;
-                Debug.Log($"Awake: TacticalPositionOption is set to {TacticalPositionOption}");
-            }
-            else
-            {
-                Debug.LogWarning("Awake: ParentPositionZoneView is null");
-            }
-
-            
-            // Profile = new Core.Entities.Player() { Id = 0, Name = null, SquadNumber = null, CurrentAbility = 0 };
-            // HasPlayerItem = false;
             SetInUseForFormation(false);
             SetPlayerData(null);
         }
 
         private void Start()
         {
-            if (ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
-            {
-                var roles = RoleManager.GetRolesForPosition(TacticalPositionOption);
-                Debug.Log(
-                    $"Awake: TacticalPositionOption {TacticalPositionOption} has {roles.Count} roles: {string.Join(", ", roles.Select(r => r.ToString()))}");
-
-                Debug.Log($"Awake: TacticalPositionOption is set to {TacticalPositionOption}");
-            }
-            
-            SetInUseForFormation(false);
-            SetPlayerData(null);
+            // Initialization is now handled by InitializeTacticalPosition method
         }
 
         /// <summary>
@@ -160,22 +137,37 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         {
             Profile = profile;
             bool oldHasPlayerItem = HasPlayerItem;
+            
             if (Profile != null && !string.IsNullOrEmpty(Profile.Name) && Profile.Id >= 1)
             {
                 HasPlayerItem = true;
-                Debug.Log("View owner:" +ViewOwnerOption);
+                Debug.Log("View owner:" + ViewOwnerOption);
+                
+                // Safely assign player to tactical position
                 if (ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
                 {
-                    TacticalPosition.AssignedPlayerId = Profile.Id;
+                    EnsureTacticalPositionInitialized();
+                    if (TacticalPosition != null)
+                    {
+                        TacticalPosition.AssignedPlayerId = Profile.Id;
+                        TacticalPosition.AssignedPlayer = Profile;
+                    }
                 }
                 Debug.Log("SetPlayerData: Data reaching profile tacticsPitch belongs to: " + Profile.Name);
             }
             else
             {
                 HasPlayerItem = false;
+                
+                // Safely clear player from tactical position
                 if (ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
                 {
-                    TacticalPosition.AssignedPlayerId = null;
+                    EnsureTacticalPositionInitialized();
+                    if (TacticalPosition != null)
+                    {
+                        TacticalPosition.AssignedPlayerId = null;
+                        TacticalPosition.AssignedPlayer = null;
+                    }
                 }
                 Profile = new Core.Entities.Player();
                 Debug.Log("SetPlayerData: Data reaching profile tacticsPitch is null: ");
@@ -271,10 +263,67 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 }
             }
 
-            // Reset tactical position
-            if (TacticalPosition != null)
+            // Reset tactical position completely
+            TacticalPosition = null;
+            TacticalPositionOption = default;
+        }
+
+        public void Initialize(TacticsBoardController controller, PositionZoneView zoneView,
+            PlayerItemViewOwnerOption viewOwnerOption, int index)
+        {
+            Controller = controller;   
+            ParentPositionZoneView = zoneView;
+            ViewOwnerOption = viewOwnerOption;
+
+            if (viewOwnerOption == PlayerItemViewOwnerOption.StartingList)
             {
-                TacticalPosition.AssignedPlayerId = null;
+                StartingPlayersListIndex = index;
+                InitializeTacticalPosition();
+            }
+            else if (viewOwnerOption == PlayerItemViewOwnerOption.BenchList)
+            {
+                BenchPlayersListIndex = index;
+            }
+            else if (viewOwnerOption == PlayerItemViewOwnerOption.ReserveList)
+            {
+                ReservePlayersListIndex = index;
+            }
+        }
+        
+        /// <summary>
+        /// Initialize the tactical position for this player view.
+        /// Should be called after ParentPositionZoneView is set.
+        /// </summary>
+        public void InitializeTacticalPosition()
+        {
+            if (ViewOwnerOption != PlayerItemViewOwnerOption.StartingList)
+                return;
+
+            if (ParentPositionZoneView == null)
+            {
+                Debug.LogError($"InitializeTacticalPosition: ParentPositionZoneView is null for {gameObject.name}");
+                return;
+            }
+
+            TacticalPositionOption = ParentPositionZoneView.tacticalPositionOption;
+            
+            // Create the tactical position using the simpler constructor
+            TacticalPosition = new TacticalPosition(
+                TacticalPositionUtils.GetGroupForPosition(TacticalPositionOption),
+                TacticalPositionOption
+            );
+
+            Debug.Log($"InitializeTacticalPosition: Created TacticalPosition for {TacticalPositionOption} with {TacticalPosition.AvailableRoles.Count} roles");
+        }
+
+        /// <summary>
+        /// Ensures TacticalPosition is initialized before accessing it
+        /// </summary>
+        private void EnsureTacticalPositionInitialized()
+        {
+            if (ViewOwnerOption == PlayerItemViewOwnerOption.StartingList && TacticalPosition == null)
+            {
+                InitializeTacticalPosition();
             }
         }
 
