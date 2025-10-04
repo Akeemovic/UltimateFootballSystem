@@ -195,7 +195,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             mainView.Show(); // Ensure the mainView is active
             mainView.UpdateView(); // This will trigger PlayerItemGeneralViewMode.UpdateView()
 
-            if (!isCalledFromParentView)
+            if (!isCalledFromParentView && ParentPositionZoneView != null)
             {
                 ParentPositionZoneView.SetInUseForFormation(inUseForFormation, isCalledFromChildView: true);
             }
@@ -301,7 +301,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
             if (ParentPositionZoneView == null)
             {
-                Debug.LogError($"InitializeTacticalPosition: ParentPositionZoneView is null for {gameObject.name}");
+                // Debug.LogError($"InitializeTacticalPosition: ParentPositionZoneView is null for {gameObject.name}");
                 return;
             }
 
