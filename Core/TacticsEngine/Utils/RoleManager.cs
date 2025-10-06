@@ -108,6 +108,12 @@ namespace UltimateFootballSystem.Core.TacticsEngine.Utils
 
             Debug.Log($"RoleManager: Getting roles for position {position}");
 
+            if (Instance._roleDefinitionLookup == null)
+            {
+                Debug.LogWarning("RoleManager: _roleDefinitionLookup is null, initializing...");
+                Instance.InitializeRoleDefinitions();
+            }
+
             foreach (var definition in Instance._roleDefinitionLookup.Values)
             {
                 bool roleAvailable = false;
