@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UIWidgets;
+using UltimateFootballSystem.Core.Entities;
 using UltimateFootballSystem.Core.TacticsEngine;
 using UltimateFootballSystem.Gameplay.Tactics.Tactics;
 using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
@@ -156,28 +158,15 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// <param name="eventData">Event data.</param>
         public virtual void Drop(PlayerItemDragData data, PointerEventData eventData)
         {
-            // Debug.Log($"Dropping profile {data.Profile.Name} on target {Target.Profile.Name}");
-            // HideDropIndicator();
+            // Create target drag data and set the drop target reference
+            var targetData = Target.GetDragData();
+            targetData.SetDropTargetViewReference(Target);
 
-            // data.SetDropTargetViewReference(Target);
+            // Call unified swap logic in controller - handles formation changes, model updates, view refreshes
+            Controller.SwapPlayers(data, targetData);
 
-            // Controller.SwapPlayersDropped(data, Target.GetDragData());
-            Controller.BoardPlayerItemManager.SwapPlayersDropped(data, Target.GetDragData());
-            
             // Play click sound on successful drop
             Controller.PlayClickSound();
-            
-            // Don't call SetInUseForFormation for views NOT OWNED by the StartingList
-            if (Target.ViewOwnerOption != PlayerItemViewOwnerOption.StartingList) return;
-            // Make target available for formation and source not available for formation
-            // if the source is not already in formation 
-            if (!data.DragSourceView.InUseForFormation || Target.InUseForFormation) return;
-            using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-            {
-                data.DragSourceView.SetInUseForFormation(false);
-                Target.SetInUseForFormation(true);
-            }
-            // HideDropIndicator();
         }
 
         /// <summary>

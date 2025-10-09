@@ -13,19 +13,19 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// </summary>
         public static void SyncStartingPositionPlayerMappingFromUI(this TacticsBoardController controller)
         {
-            if (controller.startingPlayersViews == null) return;
+            if (controller.StartingPlayersViews == null) return;
 
-            // Clear and rebuild StartingPositionPlayerMapping from current UI state
-            controller.StartingPositionPlayerMapping.Clear();
-            
-            foreach (var view in controller.startingPlayersViews)
+            // Clear and rebuild Model's StartingPositionPlayerMapping from current UI state
+            controller.Model.StartingPositionPlayerMapping.Clear();
+
+            foreach (var view in controller.StartingPlayersViews)
             {
                 if (view?.ParentPositionZoneView == null) continue;
-                
+
                 var position = view.ParentPositionZoneView.tacticalPositionOption;
                 var player = view.HasPlayerItem ? view.Profile : null;
-                
-                controller.StartingPositionPlayerMapping[position] = player;
+
+                controller.Model.StartingPositionPlayerMapping[position] = player;
             }
         }
 
@@ -35,19 +35,19 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         public static Dictionary<TacticalPositionOption, Core.Entities.Player?> GetCurrentStartingPositionPlayerMapping(this TacticsBoardController controller)
         {
             var mapping = new Dictionary<TacticalPositionOption, Core.Entities.Player?>();
-            
-            if (controller.startingPlayersViews == null) return mapping;
-            
-            foreach (var view in controller.startingPlayersViews)
+
+            if (controller.StartingPlayersViews == null) return mapping;
+
+            foreach (var view in controller.StartingPlayersViews)
             {
                 if (view?.ParentPositionZoneView == null) continue;
-                
+
                 var position = view.ParentPositionZoneView.tacticalPositionOption;
                 var player = view.HasPlayerItem ? view.Profile : null;
-                
+
                 mapping[position] = player;
             }
-            
+
             return mapping;
         }
 

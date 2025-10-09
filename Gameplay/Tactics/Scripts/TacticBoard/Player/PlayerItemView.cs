@@ -191,6 +191,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
             InUseForFormation = inUseForFormation;
 
+            // NOTE: Do NOT clear player data here! The swap logic needs the data.
+            // UpdateViewsAfterSwap() will handle clearing data for positions not in formation.
+
             // mainView handles all display logic now
             mainView.Show(); // Ensure the mainView is active
             mainView.UpdateView(); // This will trigger PlayerItemGeneralViewMode.UpdateView()

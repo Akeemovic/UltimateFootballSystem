@@ -12762,59 +12762,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60a142fb8cec4b5fa5d3342f9ebcc725, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
-  dragInfoView: {fileID: 0}
-  playerItemViewPrefab: {fileID: 2197158568366358096, guid: dffe72693f0bb1b4c80ea0e4e077012c,
-    type: 3}
-  tacticsPitch: {fileID: 220908029672694770}
-  zoneContainerViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  substitutesListSection: {fileID: 751427406}
-  reserveListSection: {fileID: 674011468}
-  startingPlayersViews:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  substitutesPlayersViews: []
-  reservePlayersViews: []
-  roleSelectorDialog: {fileID: 1047119383}
-  SelectedPlayerItemView: {fileID: 0}
+  view: {fileID: 6985367508334119220}
   teamId: 419
   audioSource: {fileID: 0}
   errorAudioClip: {fileID: 8300000, guid: 21ca8969df8e879449814a27c6dcba36, type: 3}
   selectAudioClip: {fileID: 8300000, guid: 3350be12c7ae7464283fa1f210d98871, type: 3}
   clickAudioClip: {fileID: 8300000, guid: 238d8a0a26cddb14c8a84d04acb66738, type: 3}
-  reservePlayersIds: 
-  autosaveApply: 1
   allowedSubstitutes: 9
   autoSortSubstitutes: 0
   autoSortReserves: 1
+  roleSelectorDialog: {fileID: 1047119383}
 --- !u!82 &2067303919
 AudioSource:
   m_ObjectHideFlags: 0
@@ -22896,6 +22853,7 @@ GameObject:
   - component: {fileID: 297364892443140525}
   - component: {fileID: 220908029672694770}
   - component: {fileID: 6985367508334119219}
+  - component: {fileID: 6985367508334119220}
   m_Layer: 0
   m_Name: Flex Container[TacticsPitch]
   m_TagString: Untagged
@@ -41006,6 +40964,58 @@ MonoBehaviour:
   fontsTMPro: []
   fontSizes: []
   theme: {fileID: 11400000, guid: 7c5fcfc2de3f28d418f1cb518962b7ae, type: 2}
+--- !u!114 &6985367508334119220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2922810886420424004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b2880226586d78459c870d4f34d66b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  zoneContainerViews:
+  - {fileID: 2274562995378431510}
+  - {fileID: 426922089}
+  - {fileID: 29342748}
+  - {fileID: 1993140097}
+  - {fileID: 1948641750}
+  - {fileID: 1735929674}
+  viewModesDropDown: {fileID: 1554692531}
+  substitutesListSection: {fileID: 751427406}
+  reserveListSection: {fileID: 674011468}
+  playerItemViewPrefab: {fileID: 2197158568366358096, guid: dffe72693f0bb1b4c80ea0e4e077012c,
+    type: 3}
+  startingPlayersViews:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  substitutesPlayersViews: []
+  reservePlayersViews: []
+  dragInfoView: {fileID: 0}
 --- !u!224 &7029893917755369630
 RectTransform:
   m_ObjectHideFlags: 0

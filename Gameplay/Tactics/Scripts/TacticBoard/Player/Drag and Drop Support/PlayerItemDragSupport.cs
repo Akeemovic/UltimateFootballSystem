@@ -1,4 +1,4 @@
-using UIWidgets;
+﻿using UIWidgets;
 using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
@@ -181,12 +181,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             // Remove fade effect
             source.BrightenMainView();
 
-            using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-            {
+            // using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
+            // {
                 // TacticsBoardController.Instance.View.HideUnusedPlayerItemViews();
                 Source.Controller.tacticsPitch.HideUnusedPlayerItemViews();
                 // TacticsPitch.HideUnusedPlayerItemViews(TacticsBoardController.Instance.zoneContainerViews);
-            }
+            // }
         }
     }
 }

@@ -264,7 +264,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             }
 
             string playerName = playerItemView?.Profile?.Name ?? "Unknown Player";
-            Debug.Log($"[PlayerItemViewSelectionLayer] Selectability {(selectable ? "enabled" : "disabled")} for {playerName}");
+            // Debug.Log($"[PlayerItemViewSelectionLayer] Selectability {(selectable ? "enabled" : "disabled")} for {playerName}");
         }
 
         /// <summary>

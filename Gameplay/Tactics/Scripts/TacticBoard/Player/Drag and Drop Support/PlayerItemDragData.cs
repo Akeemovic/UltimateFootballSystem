@@ -60,19 +60,58 @@ namespace UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_S
         }
 
         /// <summary>
-        /// Tactical Position Option.
+        /// Source Tactical Position - reads from DragSourceView.
+        /// Returns null if not a starting player or no position zone.
         /// </summary>
+        public TacticalPositionOption? SourceTacticalPosition
+        {
+            get
+            {
+                // Only starting players have tactical positions
+                if (StartingPlayersListIndex < 0) return null;
+
+                if (DragSourceView?.ParentPositionZoneView != null)
+                {
+                    return DragSourceView.ParentPositionZoneView.tacticalPositionOption;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Target Tactical Position - reads from DropTargetView.
+        /// Returns null if not a starting player or no position zone.
+        /// </summary>
+        public TacticalPositionOption? TargetTacticalPosition
+        {
+            get
+            {
+                // Only starting players have tactical positions
+                if (StartingPlayersListIndex < 0) return null;
+
+                if (DropTargetView?.ParentPositionZoneView != null)
+                {
+                    return DropTargetView.ParentPositionZoneView.tacticalPositionOption;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// DEPRECATED: Use SourceTacticalPosition or TargetTacticalPosition instead.
+        /// This property only reads from DragSourceView which is incorrect for target.
+        /// </summary>
+        [System.Obsolete("Use SourceTacticalPosition or TargetTacticalPosition instead")]
         public TacticalPositionOption TacticalPositionOption
         {
             get
             {
                 if (DragSourceView != null && DragSourceView.ParentPositionZoneView != null)
                 {
-                    Debug.Log($"TacticalPositionOption: {DragSourceView.ParentPositionZoneView.tacticalPositionOption}");
                     return DragSourceView.ParentPositionZoneView.tacticalPositionOption;
                 }
-
-                Debug.LogWarning("TacticalPositionOption: DragSourceView or ParentPositionZoneView is null");
                 return TacticalPositionOption.None;
             }
         }

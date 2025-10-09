@@ -1,332 +1,332 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UIWidgets;
 using UltimateFootballSystem.Core.Entities;
 using UltimateFootballSystem.Core.TacticsEngine;
 using UltimateFootballSystem.Core.TacticsEngine.Utils;
 using UltimateFootballSystem.Core.Utils;
+using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
-using Lean.Pool;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
+    /// <summary>
+    /// Thin mediator/controller between TacticBoardModel and TacticsPitchView.
+    /// Handles user input and coordinates model-view updates.
+    /// </summary>
     [RequireComponent(typeof(AudioSource))]
     public class TacticsBoardController : MonoBehaviour
     {
-        public Canvas canvas;
-        
-        [HideInInspector]
-        public PlayerItemView dragInfoView;
-        
-        [SerializeField] 
-        public Transform playerItemViewPrefab;
-        
-        public TacticsPitch tacticsPitch;
-
-        [HideInInspector] 
-        public PositionZonesContainerView[] zoneContainerViews = new PositionZonesContainerView[6];
-        
-        [SerializeField] 
-        public ListSection substitutesListSection;
-        
-        [SerializeField] 
-        public ListSection reserveListSection;
-        
-        // [SerializeField]
-        public PlayerItemView[] startingPlayersViews = new PlayerItemView[24];
-        
-        // [SerializeField]
-        public PlayerItemView[] substitutesPlayersViews;
-        
-        // [SerializeField]
-        public PlayerItemView[] reservePlayersViews;
-
-        // [SerializeField] 
-        public Dialog roleSelectorDialog;
-        
-        // [SerializeField] 
-        // public GameObject roleSelectorDialog;
-        //
-        // [SerializeField] 
-        // public GameObject roleSelectorDialogContainer;
-        // [SerializeField] 
-        // public GameObject roleSelectorDialogPrefab;
-
-        public PlayerItemView SelectedPlayerItemView;
-        
-        public PlayerDataManager PlayerDataManager;
+        [Header("References")]
+        public TacticsPitchView view;
+        public PlayerDataManager playerDataManager;
         public int teamId = 419;
-        
-        private SelectionSwapManager selectionSwapManager;
-        public SelectionSwapManager SelectionSwapManager => selectionSwapManager;
-    
-        // Audio management
+
         [Header("Audio Settings")]
-        [SerializeField] public AudioSource audioSource;
-        [SerializeField] public AudioClip errorAudioClip; // Optional error sound
-        [SerializeField] public AudioClip selectAudioClip;
-        [SerializeField] public AudioClip clickAudioClip;
-        
-        // EVENTS
-        public event Action<PlayerItemViewModeOption> OnViewModeChanged;
-        
-        // Mapping tactical positions to player IDs
-        public Dictionary<TacticalPositionOption, int?> StartingPositionIdMapping;
-        public List<int?> BenchPlayersIds;
-        public List<int> reservePlayersIds;
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip errorAudioClip;
+        [SerializeField] private AudioClip selectAudioClip;
+        [SerializeField] private AudioClip clickAudioClip;
 
-        // Populated based on player data from PlayerDataManager
-        public Dictionary<TacticalPositionOption, Player?> StartingPositionPlayerMapping;
-        public ObservableList<Player> SubstitutesPlayersItems;
-        public ObservableList<Player> ReservePlayersItems;
+        [Header("Configuration")]
+        [SerializeField] private int allowedSubstitutes = 9;
+        [SerializeField] private bool autoSortSubstitutes = false;
+        [SerializeField] private bool autoSortReserves = true;
 
-        private bool _isFirstLoad = true;
-
-        [SerializeField] private bool autosaveApply = true;
-
-        public int allowedSubstitutes = 9;
-        public bool autoSortSubstitutes = false;  // Changed default to false as per requirement
-        public bool autoSortReserves = true;      // New field for reserve sorting
-        
-        public BoardPlayerItemManager BoardPlayerItemManager;
-        public BoardInitializationManager BoardInitializationManager;
-        public BoardViewRefreshManager boardViewRefreshManager;
-        private BoardSelectionManager boardSelectionManager;
-        private BoardTacticManager boardTacticManager;
-        
+        // Model and managers
+        private TacticBoardModel _model;
+        private SelectionSwapManager _selectionSwapManager;
         private Team _team;
-        
+
+        // Events
+        public event Action<PlayerItemViewModeOption> OnViewModeChanged;
+
+        #region Unity Lifecycle
+
         private void Awake()
         {
-            if (tacticsPitch == null)
-            {
-                Debug.LogError("TacticsPitch is not set. Please assign it in the inspector.");
-            }
+            InitializeAudio();
+            InitializeTeamAndModel();
+            InitializeManagers();
+            InitializeView();
+        }
 
-            _team = new Team(419, "Nitrocent United");
-            _team.Players = new List<int>() { 
-                1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
-                11, 101, 110, 107, 108, 201, 210, 207, 202, 203, 
-                204, 205, 206, 208, 209, 211, 212, 213, 214, 215, 
-                216, 217, 218, 219, 220, 221, 222, 223, 224, 225
-            };
-            
-            Debug.Log("before");
-            var tactic = new Tactic();
-            _team.AddTactic(tactic);
-            _team.ActiveTactic.ChangeFormation(FormationsPositions.F343);
-            var starting11 = new List<int?>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 225, 10};
-            _team.ActiveTactic.AssignPlayersToPosition(starting11);
-            _team.ActiveTactic.Substitutes = new List<int?>() { 101, 110, 107, 108 };
-            
-            Debug.Log("Active positions count" + _team.ActiveTactic.ActivePositions.Count);
-            
-            StartingPositionPlayerMapping = new Dictionary<TacticalPositionOption, Core.Entities.Player?>();
-            SubstitutesPlayersItems = new ObservableList<Core.Entities.Player>();
-            ReservePlayersItems = new ObservableList<Core.Entities.Player>();
-            
-            var canvas = FindObjectOfType<Canvas>();
-            dragInfoView = PlayerItemViewPoolManager.SpawnPlayerItemView(playerItemViewPrefab.GetComponent<PlayerItemView>(), canvas.gameObject.transform);
-            dragInfoView.ViewOwnerOption = PlayerItemViewOwnerOption.DragAndDrop;
-            dragInfoView.Controller = this;
-            dragInfoView.gameObject.SetActive(false);
-            
+        private void Start()
+        {
+            LoadDataFromTeam();
+            InitializeAllViews();
+            RegisterListeners();
+        }
+
+        private void Update()
+        {
+            HandleKeyboardInput();
+        }
+
+        private void OnDisable()
+        {
+            UnregisterListeners();
+            view?.Cleanup();
+        }
+
+        #endregion
+
+        #region Initialization
+
+        private void InitializeAudio()
+        {
             audioSource = GetComponent<AudioSource>();
             if (audioSource == null)
             {
                 audioSource = gameObject.AddComponent<AudioSource>();
             }
-            
-            zoneContainerViews = tacticsPitch.zoneContainerViews;
-            
-            Debug.Log("zoneContainerViews count" + zoneContainerViews.Length);
-
-            BoardPlayerItemManager = new BoardPlayerItemManager(this);
-            boardTacticManager = new BoardTacticManager(this);
-            boardViewRefreshManager = new BoardViewRefreshManager(this, BoardInitializationManager);
-            BoardInitializationManager = new BoardInitializationManager(this, boardTacticManager);
-            boardSelectionManager = new BoardSelectionManager(this, boardViewRefreshManager);
-            // Initialize selection swap manager
-            selectionSwapManager = new SelectionSwapManager(this);
         }
 
-        private void Start()
+        private void InitializeTeamAndModel()
         {
-            InitData();
-            InitViews();
-
-            RegisterDropdownListeners();
-            
-            SubstitutesPlayersItems.OnCollectionChange += () =>
-            {
-                substitutesListSection.UpdateFormattedHeaderText(SubstitutesPlayersItems.Count.ToString());
-                Debug.Log("Substitutes Count: " + SubstitutesPlayersItems.Count + "*** Players: " + string.Join(" ", SubstitutesPlayersItems.Where(item => item != null).Select(item => item.Id)));
+            // Create temp team (replace with real team loading)
+            _team = new Team(teamId, "Nitrocent United");
+            _team.Players = new List<int>() {
+                1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                11, 101, 110, 107, 108, 201, 210, 207, 202, 203,
+                204, 205, 206, 208, 209, 211, 212, 213, 214, 215,
+                216, 217, 218, 219, 220, 221, 222, 223, 224, 225
             };
 
-            ReservePlayersItems.OnCollectionChange += () =>
-            {
-                reserveListSection.UpdateFormattedHeaderText(ReservePlayersItems.Count.ToString());
-                Debug.Log("Reserves Count: " + ReservePlayersItems.Count + "*** Players: " + string.Join(" ", ReservePlayersItems.Where(item => item != null).Select(item => item.Id)));
-            };
+            var tactic = new Tactic();
+            _team.AddTactic(tactic);
+            _team.ActiveTactic.ChangeFormation(FormationsPositions.F343);
+
+            // var starting11 = new List<int?>() { 1, 2, 3, 4, 5, 6, 7, 8, 9, 225, 10};
+            var starting11 = new List<int?>() { 1, 2, 3, 4, 5, 6, null, null, null, null, null};
+            _team.ActiveTactic.AssignPlayersToPosition(starting11);
+            _team.ActiveTactic.Substitutes = new List<int?>() { 101, 110, 107, 108 };
+
+            // Create model
+            _model = new TacticBoardModel(_team);
+            _model.AllowedSubstitutes = allowedSubstitutes;
+            _model.AutoSortSubstitutes = autoSortSubstitutes;
+            _model.AutoSortReserves = autoSortReserves;
+
+            // Subscribe to model events
+            _model.OnSubstitutesCountChanged += (count) => view.UpdateSubstitutesHeaderCount(count);
+            _model.OnReservesCountChanged += (count) => view.UpdateReservesHeaderCount(count);
         }
-        
-        private void Update()
+
+        private void InitializeManagers()
+        {
+            _selectionSwapManager = new SelectionSwapManager(this, _model, view);
+        }
+
+        private void InitializeView()
+        {
+            if (view == null)
+            {
+                Debug.LogError("TacticsPitchView is not assigned!");
+                return;
+            }
+
+            view.Initialize(this);
+        }
+
+        private void LoadDataFromTeam()
+        {
+            _model.InitializeFromTeam(playerDataManager);
+        }
+
+        private void InitializeAllViews()
+        {
+            using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
+            {
+                // Initialize starting players
+                view.InitializeStartingPlayerViews(this, HandleFormationStatusChanged);
+
+                // Set initial formation
+                SetFormation(_model.StartingPositionPlayerMapping.Keys.ToArray(), initCall: true);
+
+                // Initialize subs and reserves
+                view.InitializeSubstituteViews(this, _model.SubstitutesPlayersItems, _model.AllowedSubstitutes, HandleFormationStatusChanged);
+                view.InitializeReserveViews(this, _model.ReservePlayersItems);
+            }
+        }
+
+        private void RegisterListeners()
+        {
+            view.OnViewModeChanged += HandleViewModeChanged;
+            view.OnPlayerItemClicked += HandlePlayerItemClicked;
+        }
+
+        private void UnregisterListeners()
+        {
+            if (view != null)
+            {
+                view.OnViewModeChanged -= HandleViewModeChanged;
+                view.OnPlayerItemClicked -= HandlePlayerItemClicked;
+            }
+        }
+
+        #endregion
+
+        #region User Input Handlers
+
+        private void HandleKeyboardInput()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                selectionSwapManager.ClearSelection();
+                _selectionSwapManager?.ClearSelection();
             }
-            
+
             if (Input.GetKeyDown(KeyCode.S))
             {
-                boardTacticManager.SaveTacticWithTimestamp();
+                SaveTacticWithTimestamp();
             }
-            
+
             if (Input.GetKeyDown(KeyCode.C))
             {
-                boardSelectionManager.ClearAllSelections();
+                ClearAllSelections();
             }
-            
+
             if (Input.GetKeyDown(KeyCode.D))
             {
-                boardSelectionManager.ClearStartingLineup();
+                ClearStartingLineup();
             }
 
             if (Input.GetKeyDown(KeyCode.E))
             {
-                boardSelectionManager.ClearSubstitutes();
+                ClearSubstitutes();
             }
-            
+
+            // Formation shortcuts
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-                {
-                    SetFormation(FormationsPositions.F442);
-                }
+                SetFormation(FormationsPositions.F442);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-                {
-                    SetFormation(FormationsPositions.F433_DM_Wide);
-                }
+                SetFormation(FormationsPositions.F433_DM_Wide);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-                {
-                    SetFormation(FormationsPositions.F4141);
-
-                }
+                SetFormation(FormationsPositions.F4141);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
-                using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-                {
-                    SetFormation(FormationsPositions.F4231_Wide);
-                }
+                SetFormation(FormationsPositions.F4231_Wide);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha5))
             {
-                using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-                {
-                    SetFormation(FormationsPositions.F3232_352);
-                }
+                SetFormation(FormationsPositions.F3232_352);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha6))
             {
-                using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-                {
-                    SetFormation(FormationsPositions.F343);
-                }
+                SetFormation(FormationsPositions.F343);
             }
         }
 
-        private void InitViews()
+        private void HandlePlayerItemClicked(PlayerItemView clickedItem)
+        {
+            _selectionSwapManager?.HandleItemClicked(clickedItem);
+        }
+
+        private void HandleViewModeChanged(int selectedIndex)
         {
             using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
             {
-                BoardInitializationManager.InitializeAndSetupBoard();
-                BoardInitializationManager.InitializeSubstitutePlayers();
-                BoardInitializationManager.InitializeReservePlayers();
+                PlayerItemViewModeOption selectedMode = (PlayerItemViewModeOption)selectedIndex;
+                Debug.Log("Selected View Mode: " + selectedMode);
+                OnViewModeChanged?.Invoke(selectedMode);
             }
         }
-        
-        private void InitData()
+
+        private void HandleFormationStatusChanged(bool inUseForFormation)
         {
-            Debug.Log("Active positions count" + _team.ActiveTactic.ActivePositions.Count);
-            
-            // Initialize the mapping dictionary
-            StartingPositionPlayerMapping = new Dictionary<TacticalPositionOption, Core.Entities.Player?>();
+            Debug.Log("Formation status changed. Updating tactic based on active zones.");
+            // Update model's CurrentTactic if needed
+        }
 
-            // Example bench player IDs (these would come from your PlayerDataManager in a real scenario)
-            BenchPlayersIds = _team.ActiveTactic.Substitutes;
+        #endregion
 
-            // Step 1: Get the current squad from the PlayerDataManager
-            List<Player> currentSquad = _team.Players
-                .Select(id => PlayerDataManager.GetPlayerById(id))
-                .Where(player => player != null)
-                .ToList();
+        #region Formation Management
 
-            // Step 2: Populate starting position mapping
-            foreach (var position in _team.ActiveTactic.ActivePositions)
+        public void SetFormation(TacticalPositionOption[] newFormation, bool initCall = false)
+        {
+            // 1. Update model (preserves existing player assignments)
+            _model.SetFormation(newFormation);
+
+            // 2. Update view zones
+            view.UpdateFormationZones(newFormation, initCall);
+
+            // 3. Update view to show players from model
+            view.UpdateStartingPlayers(_model.StartingPositionPlayerMapping);
+
+            // 4. Show only formation zones if not in selection mode
+            if (!_selectionSwapManager.HasAnySelection)
             {
-                Debug.Log(position.ToString());
-                TacticalPositionOption posOption = position.Position;
-                var playerId = position.AssignedPlayerId;
-
-                // Find the player profile with matching Id or set to null if not found
-                var playerProfile = currentSquad.FirstOrDefault(p => p.Id == playerId);
-                StartingPositionPlayerMapping[posOption] = playerProfile;
-            }
-
-            SubstitutesPlayersItems.Clear();
-            ReservePlayersItems.Clear();
-
-            int benchCount = 0;
-
-            // Distribute bench players according to the AllowedSubstitutes limit
-            for (int i = 0; i < BenchPlayersIds.Count; i++)
-            {
-                var playerId = BenchPlayersIds[i];
-                var playerProfile = currentSquad.FirstOrDefault(p => p.Id == playerId);
-    
-                if (playerProfile != null)
-                {
-                    if (benchCount < allowedSubstitutes)
-                    {
-                        // Add to bench until the AllowedSubstitutes limit is reached
-                        SubstitutesPlayersItems.Add(playerProfile);
-                        benchCount++;
-                    }
-                    else
-                    {
-                        // Once bench is full, add remaining players to reserves
-                        ReservePlayersItems.Add(playerProfile);
-                    }
-                }
-                
-                Debug.Log("bench player count: " + SubstitutesPlayersItems.Count);
-                Debug.Log("bench players: " + string.Join(", ", SubstitutesPlayersItems.Select(player => player.Name)));
-            }
-
-            // Add any remaining players who aren't in startingPositionPlayerMapping, substitutesPlayersItems, or reservePlayersItems to reserves
-            foreach (var player in currentSquad)
-            {
-                if (!StartingPositionPlayerMapping.ContainsValue(player) &&
-                    !SubstitutesPlayersItems.Contains(player) &&
-                    !ReservePlayersItems.Contains(player))
-                {
-                    ReservePlayersItems.Add(player);
-                }
+                view.ShowFormationZonesOnly();
             }
         }
 
-        #region Effects
+        #endregion
 
-        // Add these public methods for audio
+        #region Player Management
+
+        public void ClearAllSelections()
+        {
+            _model.ClearStartingLineup();
+            _model.ClearSubstitutes();
+
+            RefreshAllViews();
+        }
+
+        public void ClearStartingLineup()
+        {
+            _model.ClearStartingLineup();
+            view.UpdateStartingPlayers(_model.StartingPositionPlayerMapping);
+            view.InitializeReserveViews(this, _model.ReservePlayersItems);
+        }
+
+        public void ClearSubstitutes()
+        {
+            _model.ClearSubstitutes();
+            view.RefreshSubstituteViews(_model.SubstitutesPlayersItems, _model.AllowedSubstitutes);
+            view.InitializeReserveViews(this, _model.ReservePlayersItems);
+        }
+
+        /// <summary>
+        /// Auto-pick starting lineup from model's mapping
+        /// </summary>
+        public void AutoPickStartingLineupFromMapping()
+        {
+            view.UpdateStartingPlayers(_model.StartingPositionPlayerMapping);
+        }
+
+        #endregion
+
+        #region View Refresh
+
+        public void RefreshAllViews()
+        {
+            view.UpdateStartingPlayers(_model.StartingPositionPlayerMapping);
+            view.RefreshSubstituteViews(_model.SubstitutesPlayersItems, _model.AllowedSubstitutes);
+            view.InitializeReserveViews(this, _model.ReservePlayersItems);
+        }
+
+        public void RefreshSubstituteViews()
+        {
+            Debug.Log($"[REFRESH] Refreshing substitute views - {_model.SubstitutesPlayersItems.Count} subs, allowed: {_model.AllowedSubstitutes}");
+            view.RefreshSubstituteViews(_model.SubstitutesPlayersItems, _model.AllowedSubstitutes);
+        }
+
+        public void RefreshReserveViews()
+        {
+            Debug.Log($"[REFRESH] Refreshing reserve views - {_model.ReservePlayersItems.Count} reserves");
+            view.InitializeReserveViews(this, _model.ReservePlayersItems);
+        }
+
+        #endregion
+
+        #region Audio
+
         public void PlayClickSound()
         {
             if (clickAudioClip != null && audioSource != null)
@@ -334,7 +334,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 audioSource.PlayOneShot(clickAudioClip);
             }
         }
-    
+
         public void PlaySelectSound()
         {
             if (selectAudioClip != null && audioSource != null)
@@ -342,7 +342,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 audioSource.PlayOneShot(selectAudioClip);
             }
         }
-    
+
         public void PlayErrorSound()
         {
             if (errorAudioClip != null && audioSource != null)
@@ -350,138 +350,334 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                 audioSource.PlayOneShot(errorAudioClip);
             }
         }
+
         #endregion
-        
-        #region Item Click
-        // Add method to handle item clicks
+
+        #region Tactic Saving
+
+        private void SaveTacticWithTimestamp()
+        {
+            // Update current tactic from model
+            _model.CurrentTactic.ActivePositions.Clear();
+
+            // Only save positions that are InUseForFormation (the active formation)
+            foreach (var playerView in view.startingPlayersViews)
+            {
+                if (playerView.InUseForFormation && playerView.ParentPositionZoneView != null)
+                {
+                    var position = playerView.ParentPositionZoneView.tacticalPositionOption;
+                    var player = _model.StartingPositionPlayerMapping.TryGetValue(position, out var p) ? p : null;
+
+                    var positionGroup = TacticalPositionUtils.GetGroupForPosition(position);
+                    var tacticalPos = new TacticalPosition(positionGroup, position, new List<TacticalRole>());
+
+                    if (player != null)
+                    {
+                        tacticalPos.AssignPlayer(player);
+                    }
+
+                    _model.CurrentTactic.ActivePositions.Add(tacticalPos);
+                }
+            }
+
+            _model.CurrentTactic.Substitutes.Clear();
+            foreach (var sub in _model.SubstitutesPlayersItems.Where(p => p != null))
+            {
+                _model.CurrentTactic.Substitutes.Add(sub.Id);
+            }
+
+            var formationString = _model.CurrentTactic.FormationToString();
+            var positionsString = string.Join("-", _model.CurrentTactic.ActivePositions
+                .OrderBy(p => p.Position)
+                .Select(p => p.Position.ToString()));
+
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var fileName = $"Tactic_{positionsString}_{timestamp}.json";
+
+            Debug.Log($"Saving tactic: {fileName}");
+            // Implement actual save logic here
+        }
+
+        #endregion
+
+        #region Public Accessors (for compatibility)
+
+        public TacticBoardModel Model => _model;
+        public PlayerItemView[] StartingPlayersViews => view.startingPlayersViews;
+        public PlayerItemView[] SubstitutesPlayersViews => view.substitutesPlayersViews;
+        public PlayerItemView[] ReservePlayersViews => view.reservePlayersViews;
+        public SelectionSwapManager SelectionSwapManager => _selectionSwapManager;
+
+        // View accessors
+        public PlayerItemView dragInfoView => view.dragInfoView;
+        public PositionZonesContainerView[] zoneContainerViews => view.zoneContainerViews;
+        public TacticsPitchView tacticsPitch => view;
+
+        // Selected player
+        public PlayerItemView SelectedPlayerItemView { get; set; }
+
+        // Dialog
+        public UIWidgets.Dialog roleSelectorDialog; // TODO: Move to view
+
+        // Methods that other components expect
         public void HandleItemClicked(PlayerItemView clickedItem)
         {
-            string playerName = clickedItem?.Profile?.Name ?? "Empty Position";
-            Debug.Log($"{playerName} data Reached");
-            
-            SelectedPlayerItemView = clickedItem;
-            
-            if (selectionSwapManager != null)
+            HandlePlayerItemClicked(clickedItem);
+        }
+
+        public void ClearClickSelections()
+        {
+            _selectionSwapManager?.ClearSelection();
+        }
+
+        /// <summary>
+        /// UNIFIED swap logic - called by BOTH drag-and-drop AND click-to-swap.
+        /// Handles formation changes, model updates, and view refreshes.
+        /// </summary>
+        public void SwapPlayers(PlayerItemDragData source, PlayerItemDragData target)
+        {
+            if (source == null || target == null)
             {
-                selectionSwapManager.HandleItemClicked(clickedItem);
+                Debug.LogWarning("[SWAP] Source or target data is null");
+                return;
+            }
+
+            Debug.Log("========== SWAP START ==========");
+            LogModelState("BEFORE SWAP");
+
+            var sourceView = source.DragSourceView;
+            var targetView = target.DropTargetView;
+
+            // Step 1: Detect if this is a formation change
+            bool isFormationChange = false;
+            if (sourceView?.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList &&
+                targetView?.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
+            {
+                bool sourceInFormation = sourceView.InUseForFormation;
+                bool targetInFormation = targetView.InUseForFormation;
+
+                if ((sourceInFormation && !targetInFormation) || (!sourceInFormation && targetInFormation))
+                {
+                    isFormationChange = true;
+                    Debug.Log("[SWAP] Formation change detected - updating formation first");
+
+                    // Step 2: Change formation FIRST
+                    if (sourceInFormation && !targetInFormation)
+                    {
+                        sourceView.SetInUseForFormation(false);
+                        targetView.SetInUseForFormation(true);
+                    }
+                    else
+                    {
+                        sourceView.SetInUseForFormation(true);
+                        targetView.SetInUseForFormation(false);
+                    }
+
+                    // Step 3: Sync model dictionary to match new formation
+                    SyncModelFormationFromViews();
+                }
+            }
+
+            // Step 4: Extract data for swap using the new properties
+            var sourcePos = source.SourceTacticalPosition;
+            var targetPos = target.TargetTacticalPosition;
+
+            int? sourceBenchIndex = source.BenchPlayersListIndex >= 0 ? source.BenchPlayersListIndex : (int?)null;
+            int? sourceReserveIndex = source.ReservePlayersListIndex >= 0 ? source.ReservePlayersListIndex : (int?)null;
+            int? targetBenchIndex = target.BenchPlayersListIndex >= 0 ? target.BenchPlayersListIndex : (int?)null;
+            int? targetReserveIndex = target.ReservePlayersListIndex >= 0 ? target.ReservePlayersListIndex : (int?)null;
+
+            var sourcePlayer = source.Profile;
+            var targetPlayer = target.Profile;
+
+            Debug.Log($"[SWAP] Source: {sourcePos?.ToString() ?? "NULL"} (bench:{sourceBenchIndex}, reserve:{sourceReserveIndex}) = {sourcePlayer?.Name ?? "NULL"}, Target: {targetPos?.ToString() ?? "NULL"} (bench:{targetBenchIndex}, reserve:{targetReserveIndex}) = {targetPlayer?.Name ?? "NULL"}");
+
+            // Step 5: Perform swap in model (dictionary now has correct positions if formation changed)
+            _model.SwapPlayers(
+                sourcePos, sourceBenchIndex, sourceReserveIndex, sourcePlayer,
+                targetPos, targetBenchIndex, targetReserveIndex, targetPlayer
+            );
+
+            LogModelState("AFTER MODEL SWAP");
+
+            // Step 6: Compact substitutes if needed
+            if (sourceBenchIndex.HasValue || targetBenchIndex.HasValue)
+            {
+                Debug.Log($"[SWAP] Compacting substitutes - source bench: {sourceBenchIndex}, target bench: {targetBenchIndex}");
+                _model.CompactSubstitutes();
+                LogModelState("AFTER COMPACT SUBS");
+            }
+
+            // Step 6b: Compact reserves if needed (remove any null entries)
+            Debug.Log($"[SWAP] Checking if reserves compacting needed - sourceReserveIndex.HasValue: {sourceReserveIndex.HasValue}, targetReserveIndex.HasValue: {targetReserveIndex.HasValue}");
+            if (sourceReserveIndex.HasValue || targetReserveIndex.HasValue)
+            {
+                Debug.Log($"[SWAP] YES - Compacting reserves - source reserve: {sourceReserveIndex}, target reserve: {targetReserveIndex}");
+                var nullCountBefore = _model.ReservePlayersItems.Count(p => p == null);
+                Debug.Log($"[SWAP] Null count BEFORE compact: {nullCountBefore}");
+                _model.CompactReserves();
+                var nullCountAfter = _model.ReservePlayersItems.Count(p => p == null);
+                Debug.Log($"[SWAP] Null count AFTER compact: {nullCountAfter}");
+                LogModelState("AFTER COMPACT RESERVES");
             }
             else
             {
-                Debug.LogWarning("SelectionSwapManager is not initialized");
+                Debug.Log($"[SWAP] NO - Reserves compacting NOT needed");
             }
-        }
-    
-        // Add method to clear selections (useful for keyboard shortcuts)
-        public void ClearClickSelections()
-        {
-            selectionSwapManager.ClearSelection();
-        }
-        #endregion
-        
-        /// <summary>
-        /// Change formation preserving existing players with key remapping
-        /// </summary>
-        public void SetFormation(TacticalPositionOption[] newFormation, bool initCall = false)
-        {
+
+            // Step 7: Update views
             // using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
             // {
-                // 1. Preserve existing players before formation change
-                RemapStartingPositionPlayerMapping(newFormation);
-                
-                // 2. Update formation structure (shows/hides zones)
-                boardTacticManager.SetFormationViews(newFormation, initCall);
-                
-                // 3. Update UI to reflect the remapped players
-                // UpdateUIFromStartingPositionPlayerMapping();
-                boardSelectionManager.AutoPickStartingLineupFromMapping();
+                UpdateViewsAfterSwap(sourceView, targetView);
             // }
+
+            LogModelState("AFTER VIEW UPDATE");
+            Debug.Log("========== SWAP END ==========");
         }
 
         /// <summary>
-        /// Remap existing players to new formation keys, preserving player assignments
+        /// Sync the model's StartingPositionPlayerMapping with the current formation from views.
+        /// Rebuilds the dictionary with exactly 11 positions based on InUseForFormation flags.
         /// </summary>
-        private void RemapStartingPositionPlayerMapping(TacticalPositionOption[] newFormation)
+        private void SyncModelFormationFromViews()
         {
-            // Preserve existing players (non-null values only)
-            var existingPlayers = StartingPositionPlayerMapping.Values
-                .Where(player => player != null)
-                .ToList();
-            
-            // Clear old mapping with old keys
-            StartingPositionPlayerMapping.Clear();
-            
-            // Create new mapping with new formation keys
-            for (int i = 0; i < newFormation.Length; i++)
-            {
-                var position = newFormation[i];
-                var player = i < existingPlayers.Count ? existingPlayers[i] : null;
-                StartingPositionPlayerMapping[position] = player;
-            }
-        }
+            var activePositions = new List<TacticalPositionOption>();
+            var positionPlayerMap = new Dictionary<TacticalPositionOption, Core.Entities.Player>();
 
-        /// <summary>
-        /// Update UI views to reflect current StartingPositionPlayerMapping
-        /// </summary>
-        private void UpdateUIFromStartingPositionPlayerMapping()
-        {
-            foreach (var zoneContainer in zoneContainerViews)
+            foreach (var playerView in view.startingPlayersViews)
             {
-                if (zoneContainer == null) continue;
-
-                foreach (var zoneView in zoneContainer.ZoneViews)
+                if (playerView.InUseForFormation && playerView.ParentPositionZoneView != null)
                 {
-                    if (zoneView == null || !zoneView.InUseForFormation) continue;
+                    var position = playerView.ParentPositionZoneView.tacticalPositionOption;
+                    activePositions.Add(position);
 
-                    // Get player from mapping for this position
-                    var position = zoneView.tacticalPositionOption;
-                    if (StartingPositionPlayerMapping.TryGetValue(position, out var player))
+                    // Get current player at this position from model (if exists)
+                    var player = _model.StartingPositionPlayerMapping.TryGetValue(position, out var p) ? p : null;
+                    positionPlayerMap[position] = player;
+                }
+            }
+
+            Debug.Log($"[SYNC FORMATION] Syncing model with {activePositions.Count} active positions");
+            _model.SyncFormationFromViews(activePositions.ToArray(), positionPlayerMap);
+        }
+
+        /// <summary>
+        /// DEPRECATED: Use unified SwapPlayers() instead.
+        /// </summary>
+        [System.Obsolete("Use SwapPlayers(source, target) instead")]
+        public void SwapPlayersDropped(PlayerItemDragData dragged, PlayerItemDragData dropTarget)
+        {
+            SwapPlayers(dragged, dropTarget);
+        }
+
+        /// <summary>
+        /// Targeted view updates after swap - more efficient than RefreshAllViews
+        /// </summary>
+        private void UpdateViewsAfterSwap(PlayerItemView sourceView, PlayerItemView targetView)
+        {
+            // Update source view
+            if (sourceView != null && sourceView.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
+            {
+                if (sourceView.ParentPositionZoneView != null)
+                {
+                    var position = sourceView.ParentPositionZoneView.tacticalPositionOption;
+
+                    // Only update if position is in current formation
+                    if (_model.StartingPositionPlayerMapping.TryGetValue(position, out var player))
                     {
-                        // Update UI view with mapped player (or null)
-                        zoneView.childPlayerItemView.SetPlayerData(player);
+                        // Position IS in formation - update with current player (may be null)
+                        sourceView.SetPlayerData(player);
+                        // NOTE: Don't change InUseForFormation here - it was already set correctly above
+                    }
+                    else
+                    {
+                        // Position NOT in current formation - clear the view
+                        sourceView.SetPlayerData(null);
+                        // NOTE: Don't change InUseForFormation here - it was already set correctly above
                     }
                 }
             }
-        }
-
-        public void RegisterDropdownListeners()
-        {
-            tacticsPitch.viewModesDropDown.onValueChanged.AddListener((int selectedIndex) =>
+            else if (sourceView != null && sourceView.ViewOwnerOption == PlayerItemViewOwnerOption.BenchList)
             {
-                using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-                {
-                    // Handle the tacticsPitch mode change based on the selected index
-                    PlayerItemViewModeOption selectedMode = (PlayerItemViewModeOption)selectedIndex;
-
-                    // Implement your logic for the selected mode
-                    Debug.Log("Selected View Mode: " + selectedMode);
-
-                    // Publish event only; views will react individually
-                    OnViewModeChanged?.Invoke(selectedMode);
-                }
-            });
-        }
-
-        public void OnDisable()
-        {
-            foreach (var playerItemView in startingPlayersViews)
+                RefreshSubstituteViews();
+            }
+            else if (sourceView != null && sourceView.ViewOwnerOption == PlayerItemViewOwnerOption.ReserveList)
             {
-                if (playerItemView != null)
+                RefreshReserveViews();
+            }
+
+            // Update target view
+            if (targetView != null && targetView.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList)
+            {
+                if (targetView.ParentPositionZoneView != null)
                 {
-                    playerItemView.OnFormationStatusChanged -= boardTacticManager.HandleFormationStatusChanged;
-                    Debug.Log($"Unsubscribed from {playerItemView.gameObject.name} OnFormationStatusChanged");
+                    var position = targetView.ParentPositionZoneView.tacticalPositionOption;
+
+                    // Only update if position is in current formation
+                    if (_model.StartingPositionPlayerMapping.TryGetValue(position, out var player))
+                    {
+                        // Position IS in formation - update with current player (may be null)
+                        targetView.SetPlayerData(player);
+                        // NOTE: Don't change InUseForFormation here - it was already set correctly above
+                    }
+                    else
+                    {
+                        // Position NOT in current formation - clear the view
+                        targetView.SetPlayerData(null);
+                        // NOTE: Don't change InUseForFormation here - it was already set correctly above
+                    }
                 }
             }
-            
-            foreach (var playerItemView in substitutesPlayersViews)
+            else if (targetView != null && targetView.ViewOwnerOption == PlayerItemViewOwnerOption.BenchList)
             {
-                if (playerItemView != null)
-                {
-                    playerItemView.OnFormationStatusChanged -= boardTacticManager.HandleFormationStatusChanged;
-                    Debug.Log($"Unsubscribed from {playerItemView.gameObject.name} OnFormationStatusChanged");
-                }
+                RefreshSubstituteViews();
             }
-            
-            boardViewRefreshManager.Cleanup();
+            else if (targetView != null && targetView.ViewOwnerOption == PlayerItemViewOwnerOption.ReserveList)
+            {
+                RefreshReserveViews();
+            }
+
+            // Hide unused views if swapping in starting list
+            if ((sourceView != null && sourceView.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList) ||
+                (targetView != null && targetView.ViewOwnerOption == PlayerItemViewOwnerOption.StartingList))
+            {
+                view.HideUnusedPlayerItemViews();
+            }
         }
+
+        /// <summary>
+        /// Log the complete model state for debugging
+        /// </summary>
+        private void LogModelState(string label)
+        {
+            Debug.Log($"===== MODEL STATE: {label} =====");
+
+            // Log Starting Formation
+            Debug.Log($"[STARTING] Count: {_model.StartingPositionPlayerMapping.Count}");
+            foreach (var kvp in _model.StartingPositionPlayerMapping.OrderBy(x => x.Key.ToString()))
+            {
+                Debug.Log($"  {kvp.Key} = {kvp.Value?.Name ?? "null"}");
+            }
+
+            // Log Substitutes
+            Debug.Log($"[SUBS] Count: {_model.SubstitutesPlayersItems.Count}, Allowed: {_model.AllowedSubstitutes}");
+            for (int i = 0; i < _model.SubstitutesPlayersItems.Count; i++)
+            {
+                var player = _model.SubstitutesPlayersItems[i];
+                Debug.Log($"  [{i}] = {player?.Name ?? "null"}");
+            }
+
+            // Log Reserves
+            Debug.Log($"[RESERVES] Count: {_model.ReservePlayersItems.Count}");
+            for (int i = 0; i < _model.ReservePlayersItems.Count; i++)
+            {
+                var player = _model.ReservePlayersItems[i];
+                Debug.Log($"  [{i}] = {player?.Name ?? "null"}");
+            }
+
+            Debug.Log($"=====================================");
+        }
+
+        #endregion
     }
 }
