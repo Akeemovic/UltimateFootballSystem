@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
-	public class TacticalRoleSelector : MonoBehaviour
+	public class RoleSelector : MonoBehaviour
 	{
 		[SerializeField] protected ListViewEnum RoleListView;
 		[SerializeField] protected ListViewEnum DutyListView;
@@ -113,7 +113,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 		{
 			if (Controller?.SelectedPlayerItemView?.TacticalPosition == null)
 			{
-				Debug.LogWarning("TacticalRoleSelector: Cannot show roles - missing data");
+				Debug.LogWarning("RoleSelector: Cannot show roles - missing data");
 				return;
 			}
 			
@@ -126,12 +126,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
 			if (availableRoles == null || availableRoles.Count == 0)
 			{
-				Debug.LogWarning($"TacticalRoleSelector: No available roles for position {pos.Position}");
+				Debug.LogWarning($"RoleSelector: No available roles for position {pos.Position}");
 				return;
 			}
 
 			var availableRoleOptions = availableRoles.Select(r => r.RoleOption).ToList();
-			Debug.Log($"TacticalRoleSelector: Showing {availableRoleOptions.Count} roles for position {pos.Position}");
+			Debug.Log($"RoleSelector: Showing {availableRoleOptions.Count} roles for position {pos.Position}");
 
 			RoleListViewWrapper = new ListViewEnum<TacticalRoleOption>(RoleListView, availableRoleOptions);
 			SelectRoleType();
@@ -144,7 +144,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 		{
 			if (Controller?.SelectedPlayerItemView?.TacticalPosition?.SelectedRole == null)
 			{
-				Debug.LogWarning("TacticalRoleSelector: Cannot show duties - missing selected role");
+				Debug.LogWarning("RoleSelector: Cannot show duties - missing selected role");
 				return;
 			}
 
@@ -157,11 +157,11 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
 			if (availableDuties == null || availableDuties.Count == 0)
 			{
-				Debug.LogWarning($"TacticalRoleSelector: No available duties for role {selectedRole.RoleName}");
+				Debug.LogWarning($"RoleSelector: No available duties for role {selectedRole.RoleName}");
 				return;
 			}
 
-			Debug.Log($"TacticalRoleSelector: Showing {availableDuties.Count} duties for role {selectedRole.RoleName}");
+			Debug.Log($"RoleSelector: Showing {availableDuties.Count} duties for role {selectedRole.RoleName}");
 			DutyListViewWrapper = new ListViewEnum<TacticalDutyOption>(DutyListView, availableDuties);
 			SelectDutyType();
 		}
@@ -202,7 +202,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 		
 		// private void OnDisable()
 		// {
-		// 	Debug.Log("TacticalRoleSelector: OnDisable");
+		// 	Debug.Log("RoleSelector: OnDisable");
 			// CleanupDialog();
 			// var roleListViewsItems = RoleListView.Container.GetComponentsInChildren<GameObject>();
 			// foreach (var item in roleListViewsItems)

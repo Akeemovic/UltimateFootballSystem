@@ -129,9 +129,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
                 // Don't show unless startingList views are being dragged
                 if (Source.ViewOwnerOption != PlayerItemViewOwnerOption.StartingList) return;
-                // TacticsBoardController.Instance.View.ShowUsablePlayerItemViews();
-                Source.Controller.tacticsPitch.ShowUsablePlayerItemViews();
-                // TacticsPitch.ShowUsablePlayerItemViews(TacticsBoardController.Instance.zoneContainerViews);
+                Source.Controller.view.ShowUsablePlayerItemViews();
             }
         }
 
@@ -180,13 +178,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         
             // Remove fade effect
             source.BrightenMainView();
-
-            // using (new NinjaTools.FlexBuilder.LayoutAlgorithms.ExperimentalDelayUpdates2())
-            // {
-                // TacticsBoardController.Instance.View.HideUnusedPlayerItemViews();
-                Source.Controller.tacticsPitch.HideUnusedPlayerItemViews();
-                // TacticsPitch.HideUnusedPlayerItemViews(TacticsBoardController.Instance.zoneContainerViews);
-            // }
+            Source.Controller.view.HideUnusedPlayerItemViews();
         }
     }
 }

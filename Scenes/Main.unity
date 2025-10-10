@@ -1530,7 +1530,12 @@ PrefabInstance:
     - target: {fileID: 8638667171467618734, guid: a2fba1824d841aa4692917fd6ccefb5d,
         type: 3}
       propertyPath: m_Name
-      value: DialogTemplate
+      value: RoleSelectorDialogTemplate
+      objectReference: {fileID: 0}
+    - target: {fileID: 8773037447775101710, guid: a2fba1824d841aa4692917fd6ccefb5d,
+        type: 3}
+      propertyPath: AutoFocus
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3404,7 +3409,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: -198.63013}
+  m_AnchoredPosition: {x: 399, y: -198.63013}
   m_SizeDelta: {x: 800, y: 397.26025}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &725072452
@@ -13007,26 +13012,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5172483410000154916}
   m_CullTransparentMesh: 1
---- !u!114 &220908029672694770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2922810886420424004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 602a230de99c4b618dde6a6e1017903d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  zoneContainerViews:
-  - {fileID: 2274562995378431510}
-  - {fileID: 426922089}
-  - {fileID: 29342748}
-  - {fileID: 1993140097}
-  - {fileID: 1948641750}
-  - {fileID: 1735929674}
-  viewModesDropDown: {fileID: 1554692531}
 --- !u!114 &297364892443140525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22851,7 +22836,6 @@ GameObject:
   - component: {fileID: 6524614724566281678}
   - component: {fileID: 1772857984854694310}
   - component: {fileID: 297364892443140525}
-  - component: {fileID: 220908029672694770}
   - component: {fileID: 6985367508334119219}
   - component: {fileID: 6985367508334119220}
   m_Layer: 0

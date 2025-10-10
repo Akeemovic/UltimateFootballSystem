@@ -180,7 +180,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     // dialog.gameObject.SetActive(!dialog.gameObject.activeInHierarchy);
                     // if (!dialog.gameObject.activeInHierarchy)
                     // {
-                    //     dialog.GetComponent<TacticalRoleSelector>().CleanupDialog();
+                    //     dialog.GetComponent<RoleSelector>().CleanupDialog();
                     // }
                     
                     
@@ -190,7 +190,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
                     // Debug.Log("roles available: " + availableRoleOptions.Count + " pos: " + pos);
                     
                     // // Method 3
-                    // var roleSelectorDialog = playerItemView.Controller.roleSelectorDialogContainer.GetComponentInChildren<TacticalRoleSelector>();
+                    // var roleSelectorDialog = playerItemView.Controller.roleSelectorDialogContainer.GetComponentInChildren<RoleSelector>();
                     // if (roleSelectorDialog == null)
                     // {
                     //     // spawn dialog

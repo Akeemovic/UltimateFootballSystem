@@ -3855,7 +3855,7 @@ GameObject:
   - component: {fileID: 4680610994844706103}
   - component: {fileID: 7895237594577089161}
   m_Layer: 5
-  m_Name: DialogTemplate
+  m_Name: RoleSelectorDialogTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

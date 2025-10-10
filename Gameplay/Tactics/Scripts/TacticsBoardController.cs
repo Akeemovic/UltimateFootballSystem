@@ -411,7 +411,6 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         // View accessors
         public PlayerItemView dragInfoView => view.dragInfoView;
         public PositionZonesContainerView[] zoneContainerViews => view.zoneContainerViews;
-        public TacticsPitchView tacticsPitch => view;
 
         // Selected player
         public PlayerItemView SelectedPlayerItemView { get; set; }
