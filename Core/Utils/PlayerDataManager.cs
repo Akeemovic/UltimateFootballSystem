@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UltimateFootballSystem.Core.Entities;
-using UltimateFootballSystem.Core.TacticsEngine;
+using UltimateFootballSystem.Core.Tactics;
 
 namespace UltimateFootballSystem.Core.Utils
 {

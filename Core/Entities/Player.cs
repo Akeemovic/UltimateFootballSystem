@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 using UltimateFootballSystem.Core.Stats;
-using UltimateFootballSystem.Core.TacticsEngine;
+using UltimateFootballSystem.Core.Tactics;
 using System.Linq; // Added for LINQ operations
 using System.Text; // Added for StringBuilder
 

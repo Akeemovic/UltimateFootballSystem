@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using UltimateFootballSystem.Core.TacticsEngine;
+using UltimateFootballSystem.Core.Tactics;
 
 namespace UltimateFootballSystem.Core.Entities
 {
