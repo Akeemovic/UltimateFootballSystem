@@ -12616,7 +12616,7 @@ GameObject:
   - component: {fileID: 2067303919}
   - component: {fileID: 2067303920}
   m_Layer: 0
-  m_Name: Flex Container[TacticsBoardWidget/Controller]
+  m_Name: Flex Container[TacticsBoard]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

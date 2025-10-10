@@ -50,7 +50,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         {
             base.Start();
         
-            // DragInfoView = TacticsBoardController.Instance.DragInfoView;
+            // DragInfoView = TacticBoardController.Instance.DragInfoView;
             DragInfoView = Source.Controller.dragInfoView;
             // Disable raycast target on tacticsPitch
             // to prevent it from blocking pointer raycast 

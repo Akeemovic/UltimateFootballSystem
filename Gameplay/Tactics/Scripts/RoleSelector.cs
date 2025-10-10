@@ -15,7 +15,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 		[SerializeField] protected ListViewEnum RoleListView;
 		[SerializeField] protected ListViewEnum DutyListView;
 
-		[SerializeField] protected TacticsBoardController Controller;
+		[SerializeField] protected TacticBoardController Controller;
 
 		ListViewEnum<AdditionalCanvasShaderChannels> WrapperWithFlags;
 

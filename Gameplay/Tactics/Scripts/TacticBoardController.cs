@@ -11,14 +11,14 @@ using UnityEngine;
 namespace UltimateFootballSystem.Gameplay.Tactics
 {
     /// <summary>
-    /// Thin mediator/controller between TacticBoardModel and TacticsPitchView.
+    /// Thin mediator/controller between TacticBoardModel and TacticBoardView.
     /// Handles user input and coordinates model-view updates.
     /// </summary>
     [RequireComponent(typeof(AudioSource))]
-    public class TacticsBoardController : MonoBehaviour
+    public class TacticBoardController : MonoBehaviour
     {
         [Header("References")]
-        public TacticsPitchView view;
+        public TacticBoardView view;
         public PlayerDataManager playerDataManager;
         public int teamId = 419;
 
@@ -122,7 +122,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         {
             if (view == null)
             {
-                Debug.LogError("TacticsPitchView is not assigned!");
+                Debug.LogError("TacticBoardView is not assigned!");
                 return;
             }
 

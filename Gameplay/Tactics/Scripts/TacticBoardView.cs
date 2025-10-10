@@ -15,7 +15,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
     /// Manages ALL view components and UI updates.
     /// Notifies controller of user interactions.
     /// </summary>
-    public class TacticsPitchView : MonoBehaviour
+    public class TacticBoardView : MonoBehaviour
     {
         [Header("Pitch Layout")]
         [SerializeField] public PositionZonesContainerView[] zoneContainerViews = new PositionZonesContainerView[6];
@@ -40,9 +40,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         public event Action<int> OnViewModeChanged;
         public event Action<PlayerItemView> OnPlayerItemClicked;
 
-        private TacticsBoardController _controller;
+        private TacticBoardController _controller;
 
-        public void Initialize(TacticsBoardController controller)
+        public void Initialize(TacticBoardController controller)
         {
             _controller = controller;
 
@@ -95,7 +95,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// <summary>
         /// Initialize starting player views from zone containers
         /// </summary>
-        public void InitializeStartingPlayerViews(TacticsBoardController controller, Action<bool> onFormationStatusChanged)
+        public void InitializeStartingPlayerViews(TacticBoardController controller, Action<bool> onFormationStatusChanged)
         {
             int index = 0;
             foreach (var zoneContainer in zoneContainerViews)
@@ -135,7 +135,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// <summary>
         /// Initialize substitute player views
         /// </summary>
-        public void InitializeSubstituteViews(TacticsBoardController controller, ObservableList<Player> substitutesData, int allowedSubstitutes, Action<bool> onFormationStatusChanged)
+        public void InitializeSubstituteViews(TacticBoardController controller, ObservableList<Player> substitutesData, int allowedSubstitutes, Action<bool> onFormationStatusChanged)
         {
             PlayerItemViewPoolManager.DespawnAllInContainer(substitutesListSection.viewsContainer);
 
@@ -172,7 +172,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// <summary>
         /// Initialize reserve player views
         /// </summary>
-        public void InitializeReserveViews(TacticsBoardController controller, ObservableList<Player> reservesData)
+        public void InitializeReserveViews(TacticBoardController controller, ObservableList<Player> reservesData)
         {
             PlayerItemViewPoolManager.DespawnAllInContainer(reserveListSection.viewsContainer);
 

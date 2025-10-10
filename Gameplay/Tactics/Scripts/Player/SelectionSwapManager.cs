@@ -12,9 +12,9 @@ namespace UltimateFootballSystem.Gameplay.Tactics
     /// </summary>
     public class SelectionSwapManager
     {
-        private readonly TacticsBoardController _controller;
+        private readonly TacticBoardController _controller;
         private readonly TacticBoardModel _model;
-        private readonly TacticsPitchView _view;
+        private readonly TacticBoardView _view;
 
         private PlayerItemView _selectedItem;
         private PlayerItemDragData _selectedData;
@@ -23,7 +23,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         public bool HasSelection => _selectedItem != null && _selectedItem.HasPlayerItem;
         public bool HasAnySelection => _selectedItem != null;
 
-        public SelectionSwapManager(TacticsBoardController controller, TacticBoardModel model, TacticsPitchView view)
+        public SelectionSwapManager(TacticBoardController controller, TacticBoardModel model, TacticBoardView view)
         {
             _controller = controller;
             _model = model;

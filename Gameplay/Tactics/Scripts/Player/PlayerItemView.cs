@@ -17,7 +17,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
     [Serializable]
     public class PlayerItemView : MonoBehaviour, IPoolable
     {
-        public TacticsBoardController Controller;
+        public TacticBoardController Controller;
     
         public PlayerItemViewMain mainView;
         // REMOVED: public PlayerItemViewPlaceholder placeholderView; // Make sure this is deleted from Inspector too!
@@ -271,7 +271,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
             TacticalPositionOption = default;
         }
 
-        public void Initialize(TacticsBoardController controller, PositionZoneView zoneView,
+        public void Initialize(TacticBoardController controller, PositionZoneView zoneView,
             PlayerItemViewOwnerOption viewOwnerOption, int index)
         {
             Controller = controller;   

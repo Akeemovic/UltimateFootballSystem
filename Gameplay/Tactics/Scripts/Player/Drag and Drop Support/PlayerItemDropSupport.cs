@@ -19,7 +19,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// <summary>
         /// Controller.
         /// </summary>
-        public TacticsBoardController Controller;
+        public TacticBoardController Controller;
 
         /// <summary>
         /// Target.
@@ -44,12 +44,12 @@ namespace UltimateFootballSystem.Gameplay.Tactics
 
         private void Start()
         {
-            // Controller = TacticsBoardController.Instance;
+            // Controller = TacticBoardController.Instance;
             Controller = Target.Controller;
 
             if (Controller == null)
             {
-                Debug.LogError("TacticsBoardController is not initialized properly.", this);
+                Debug.LogError("TacticBoardController is not initialized properly.", this);
             }
         }
 
@@ -186,7 +186,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         protected virtual void ShowDropIndicator(PlayerItemDragData data)
         {
             // Debug.Log("I can receive drop, I am" + data.Profile.Name);
-            // TacticsBoardController.Instance.TacticsPitch.ShowUsablePlayerItemViews();
+            // TacticBoardController.Instance.TacticsPitch.ShowUsablePlayerItemViews();
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace UltimateFootballSystem.Gameplay.Tactics
         /// </summary>
         protected virtual void HideDropIndicator()
         {
-            // TacticsBoardController.Instance.TacticsPitch.HideUnusedPlayerItemViews();
+            // TacticBoardController.Instance.TacticsPitch.HideUnusedPlayerItemViews();
         }
     
         private bool CanSwap(PlayerItemDragData dragged, PlayerItemDragData dropTarget)
