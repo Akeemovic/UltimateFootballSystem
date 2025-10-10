@@ -1,6 +1,5 @@
-using UltimateFootballSystem.Core.TacticsEngine;
+using UltimateFootballSystem.Core.Tactics;
 using UnityEngine;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using System.Collections.Generic;
 using UltimateFootballSystem.Core.Entities;
 

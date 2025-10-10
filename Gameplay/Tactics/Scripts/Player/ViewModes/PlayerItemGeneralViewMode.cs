@@ -1,7 +1,6 @@
 ﻿using TMPro;
 using UltimateFootballSystem.Common.Scripts.Utils;
-using UltimateFootballSystem.Core.TacticsEngine.Utils;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
+using UltimateFootballSystem.Core.Tactics.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;

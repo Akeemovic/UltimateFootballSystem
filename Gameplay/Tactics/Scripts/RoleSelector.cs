@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UIWidgets;
 using UIWidgets.Examples;
-using UltimateFootballSystem.Core.TacticsEngine;
+using UltimateFootballSystem.Core.Tactics;
 using UltimateFootballSystem.Gameplay.Tactics;
 using UnityEngine;
 

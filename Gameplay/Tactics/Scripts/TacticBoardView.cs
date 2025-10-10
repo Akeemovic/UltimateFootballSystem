@@ -4,7 +4,7 @@ using System.Linq;
 using TMPro;
 using UIWidgets;
 using UltimateFootballSystem.Core.Entities;
-using UltimateFootballSystem.Core.TacticsEngine;
+using UltimateFootballSystem.Core.Tactics;
 using UnityEngine;
 using Lean.Pool;
 

@@ -1,6 +1,4 @@
 ﻿using UIWidgets;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;

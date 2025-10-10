@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UIWidgets;
 using UltimateFootballSystem.Core.Entities;
-using UltimateFootballSystem.Core.TacticsEngine;
-using UltimateFootballSystem.Core.TacticsEngine.Utils;
+using UltimateFootballSystem.Core.Tactics;
+using UltimateFootballSystem.Core.Tactics.Utils;
 using UltimateFootballSystem.Core.Utils;
 
 namespace UltimateFootballSystem.Gameplay.Tactics

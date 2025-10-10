@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using UIWidgets;
 using UltimateFootballSystem.Core.Entities;
-using UltimateFootballSystem.Core.TacticsEngine;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
+using UltimateFootballSystem.Core.Tactics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

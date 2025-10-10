@@ -1,7 +1,7 @@
-using UltimateFootballSystem.Core.TacticsEngine;
+using UltimateFootballSystem.Core.Tactics;
 using UnityEngine;
 
-namespace UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support
+namespace UltimateFootballSystem.Gameplay.Tactics
 {
     /// <summary>
     /// Player Profile drag data.

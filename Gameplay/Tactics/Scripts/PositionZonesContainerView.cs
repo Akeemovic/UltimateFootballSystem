@@ -1,6 +1,4 @@
 using NinjaTools.FlexBuilder;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
 using UnityEngine;
 
 namespace UltimateFootballSystem.Gameplay.Tactics

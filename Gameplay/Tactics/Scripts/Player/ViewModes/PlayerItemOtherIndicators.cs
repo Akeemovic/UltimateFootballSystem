@@ -1,5 +1,4 @@
-﻿using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace UltimateFootballSystem.Gameplay.Tactics

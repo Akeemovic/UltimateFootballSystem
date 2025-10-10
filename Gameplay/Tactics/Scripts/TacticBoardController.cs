@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UltimateFootballSystem.Core.Entities;
-using UltimateFootballSystem.Core.TacticsEngine;
-using UltimateFootballSystem.Core.TacticsEngine.Utils;
+using UltimateFootballSystem.Core.Tactics;
+using UltimateFootballSystem.Core.Tactics.Utils;
 using UltimateFootballSystem.Core.Utils;
-using UltimateFootballSystem.Gameplay.Tactics.Tactics.Player.Drag_and_Drop_Support;
 using UnityEngine;
 
 namespace UltimateFootballSystem.Gameplay.Tactics
