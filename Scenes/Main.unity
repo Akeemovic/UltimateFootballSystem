@@ -12886,12 +12886,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roleDefinitions:
+  - {fileID: 11400000, guid: cb82668482e0db14d8382f35479dbdb1, type: 2}
+  - {fileID: 11400000, guid: a7afe036555cf9049b6428ac89610609, type: 2}
+  - {fileID: 11400000, guid: c8c2e9acdc0749a49a32babc04637d05, type: 2}
   - {fileID: 11400000, guid: 1a25c31eebe78e644857395d51d942fb, type: 2}
   - {fileID: 11400000, guid: 3db623761b9b07949b4e941b9e76ec2d, type: 2}
-  - {fileID: 11400000, guid: a7afe036555cf9049b6428ac89610609, type: 2}
-  - {fileID: 11400000, guid: 22afa4c797853e3428db917097b28d76, type: 2}
-  - {fileID: 11400000, guid: 8ebd49023a1839343bd3ccf84316a970, type: 2}
-  - {fileID: 11400000, guid: 6e14960a071dba349ad5b726510e0838, type: 2}
+  - {fileID: 11400000, guid: 363a0c5134c9d2743b3499fc0d30fe4e, type: 2}
 --- !u!1 &2103336998
 GameObject:
   m_ObjectHideFlags: 0

@@ -193,39 +193,39 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnPlayerHa
             {
                 case nameof(HoldUpBall):
                     HoldUpBall = null;
-                    HoldUpBallRequired = true;
+                    HoldUpBallRequired = false;
                     break;
                 case nameof(WingPlay):
                     WingPlay = null;
-                    WingPlayRequired = true;
+                    WingPlayRequired = false;
                     break;
                 case nameof(ShootingFrequency):
                     ShootingFrequency = null;
-                    ShootingFrequencyRequired = true;
+                    ShootingFrequencyRequired = false;
                     break;
                 case nameof(DribblingFrequency):
                     DribblingFrequency = null;
-                    DribblingFrequencyRequired = true;
+                    DribblingFrequencyRequired = false;
                     break;
                 case nameof(CrossingFrequency):
                     CrossingFrequency = null;
-                    CrossingFrequencyRequired = true;
+                    CrossingFrequencyRequired = false;
                     break;
                 case nameof(CrossDistance):
                     CrossDistance = null;
-                    CrossDistanceRequired = true;
+                    CrossDistanceRequired = false;
                     break;
                 case nameof(CrossTarget):
                     CrossTarget = null;
-                    CrossTargetRequired = true;
+                    CrossTargetRequired = false;
                     break;
                 case nameof(PassingStyle):
                     PassingStyle = null;
-                    PassingStyleRequired = true;
+                    PassingStyleRequired = false;
                     break;
                 case nameof(CreativePassing):
                     CreativePassing = null;
-                    CreativePassingRequired = true;
+                    CreativePassingRequired = false;
                     break;
                 default:
                     throw new ArgumentException("Invalid option type.");

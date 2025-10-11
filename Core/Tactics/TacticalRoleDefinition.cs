@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using Sirenix.OdinInspector;
 using UltimateFootballSystem.Core.Tactics.Instructions.Individual;
 using UnityEngine;
 
@@ -7,25 +10,47 @@ namespace UltimateFootballSystem.Core.Tactics
     [CreateAssetMenu(fileName = "New Tactical Role", menuName = "Ultimate Football System/Tactical Role Definition")]
     public class TacticalRoleDefinition : ScriptableObject
     {
-        [Header("Basic Information")]
+        [BoxGroup("Basic Information")]
+        [LabelText("Role Option")]
         public TacticalRoleOption roleOption;
+
+        [BoxGroup("Basic Information")]
+        [LabelText("Role Name")]
         public string roleName;
 
-        [Header("Position Compatibility")]
-        public List<TacticalPositionOption> availablePositions = new List<TacticalPositionOption>();
+        [BoxGroup("Basic Information")]
+        [LabelText("Abbreviation")]
+        [MaxLength(3)]
+        public string abbreviation;
+
+        [BoxGroup("Basic Information")]
+        [LabelText("Description")]
+        [TextArea(3, 6)]
+        public string description;
+
+        [BoxGroup("Position Groups")]
+        [LabelText("Available Position Groups")]
         public List<TacticalPositionGroupOption> availablePositionGroups = new List<TacticalPositionGroupOption>();
 
-        [Header("Duty Options")]
+        [BoxGroup("Position Groups")]
+        [HideInInspector]
+        public List<TacticalPositionOption> availablePositions = new List<TacticalPositionOption>();
+
+        [BoxGroup("Duty Options")]
+        [LabelText("Available Duties")]
         public List<TacticalDutyOption> availableDuties = new List<TacticalDutyOption>();
+
+        [BoxGroup("Duty Options")]
+        [LabelText("Default Duty")]
+        [ValueDropdown("availableDuties")]
         public TacticalDutyOption defaultDuty;
 
-        [Header("Zone Definitions")]
+        [BoxGroup("Zone Definitions")]
+        [HideLabel]
         public List<ZoneDefinition> zoneDefinitions = new List<ZoneDefinition>();
 
-        [Header("Instructions")]
-        public IndividualInstruction individualInstruction;
-        // [SerializeField] private IndividualInstruction individualInstruction;
-        // [SerializeField] private TacticalPositionGroupOption defaultPositionGroup = TacticalPositionGroupOption.M_Center;
+        [HideInInspector]
+        [SerializeField] private SerializableIndividualInstruction instructionConfiguration = new SerializableIndividualInstruction();
 
         [System.Serializable]
         public class ZoneDefinition
@@ -62,26 +87,20 @@ namespace UltimateFootballSystem.Core.Tactics
  
         public IndividualInstruction CreateIndividualInstruction(TacticalPositionGroupOption positionGroup)
         {
-            // Return configured instruction or create new one if not set
-            if (individualInstruction != null)
-            {
-                return individualInstruction;
-            }
-
-            var instruction = new IndividualInstruction(positionGroup);
-            return instruction;
+            // Convert serializable configuration to runtime instruction
+            return instructionConfiguration.ToRuntimeInstruction(positionGroup);
         }
 
-        // Configure the individual instruction for this role
-        public void SetIndividualInstructionOption(IndividualInstruction instruction)
+        // Get the serializable instruction configuration for editor
+        public SerializableIndividualInstruction GetInstructionConfiguration()
         {
-            individualInstruction = instruction;
+            return instructionConfiguration;
         }
 
-        // Get the configured individual instruction
-        public IndividualInstruction GetIndividualInstruction()
+        // Set the instruction configuration (used by editor)
+        public void SetInstructionConfiguration(SerializableIndividualInstruction config)
         {
-            return individualInstruction;
+            instructionConfiguration = config;
         }
 
         // Get all available positions including those from position groups
@@ -116,9 +135,13 @@ namespace UltimateFootballSystem.Core.Tactics
 
         private void OnValidate()
         {
-            if (availableDuties.Count > 0 && defaultDuty == default)
+            // Ensure default duty is within available duties
+            if (availableDuties.Count > 0)
             {
-                defaultDuty = availableDuties[0];
+                if (defaultDuty == default || !availableDuties.Contains(defaultDuty))
+                {
+                    defaultDuty = availableDuties[0];
+                }
             }
 
             if (string.IsNullOrEmpty(roleName))

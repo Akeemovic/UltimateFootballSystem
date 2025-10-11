@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c479670d1b537114aa877864e2ae21a2, type: 3}
+  m_Name: Defender
+  m_EditorClassIdentifier: 
+  roleOption: 3
+  roleName: Defender
+  abbreviation: DC
+  description: 
+  availablePositionGroups: 02000000
+  availablePositions: 
+  availableDuties: 040000000500000006000000
+  defaultDuty: 4
+  zoneDefinitions: []
+  instructionConfiguration:
+    onPlayerHasBall:
+      holdUpBallAvailability: 1
+      holdUpBallDefault: 1
+      wingPlayAvailability: 1
+      wingPlayDefault: 1
+      shootingFrequencyAvailability: 0
+      shootingFrequencyDefault: 0
+      dribblingFrequencyAvailability: 0
+      dribblingFrequencyDefault: 0
+      crossingFrequencyAvailability: 0
+      crossingFrequencyDefault: 0
+      crossDistanceAvailability: 0
+      crossDistanceDefault: 0
+      crossTargetAvailability: 0
+      crossTargetDefault: 0
+      passingStyleAvailability: 0
+      passingStyleDefault: 0
+      creativePassingAvailability: 0
+      creativePassingDefault: 0

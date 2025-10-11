@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi="http://www.w3.org/2001/XMLSchema-instance"
+    engine="UnityEngine.UIElements"
+    editor="UnityEditor.UIElements"
+    noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+    editor-extension-mode="True">
+
+    <Style src="DatabaseManager.uss"/>
+
+    <!-- Root Container -->
+    <ui:VisualElement name="root" class="root-container">
+
+        <!-- Header -->
+        <ui:VisualElement name="header" class="header">
+            <ui:Label text="⚽ Football Database Manager" class="header-title"/>
+            <ui:VisualElement class="header-spacer"/>
+            <ui:Label name="database-name-label" text="No Database Selected" class="header-subtitle"/>
+        </ui:VisualElement>
+
+        <!-- Main Tabs -->
+        <ui:VisualElement name="tab-bar" class="tab-bar">
+            <ui:Button name="tab-welcome" text="Welcome" class="tab-button tab-button-active"/>
+            <ui:Button name="tab-setup" text="Setup" class="tab-button"/>
+            <ui:Button name="tab-definitions" text="Definitions" class="tab-button"/>
+            <ui:Button name="tab-tools" text="Tools" class="tab-button"/>
+        </ui:VisualElement>
+
+        <!-- Content Area (with scroll) -->
+        <ui:ScrollView name="content-area" class="content-area">
+
+            <!-- Welcome Tab Content -->
+            <ui:VisualElement name="content-welcome" class="tab-content">
+                <ui:Label text="Welcome to Database Manager" class="title"/>
+
+                <ui:VisualElement class="help-box">
+                    <ui:Label text="This tool helps you manage all football data definitions." class="help-text"/>
+                    <ui:Label text="" class="spacer-small"/>
+                    <ui:Label text="Get started by:" class="help-text"/>
+                    <ui:Label text="1. Creating or selecting a database in the Setup tab" class="help-text"/>
+                    <ui:Label text="2. Defining roles, formations, and other data" class="help-text"/>
+                    <ui:Label text="3. Using the Tools tab to validate and export" class="help-text"/>
+                </ui:VisualElement>
+
+                <ui:Label text="Quick Actions" class="section-title"/>
+                <ui:Button name="btn-create-database" text="Create New Database" class="btn-primary"/>
+                <ui:Button name="btn-open-database" text="Open Existing Database" class="btn-secondary"/>
+
+                <ui:Label text="Recent Databases" class="section-title"/>
+                <ui:VisualElement class="help-box">
+                    <ui:Label text="No recent databases" class="help-text-small"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Setup Tab Content -->
+            <ui:VisualElement name="content-setup" class="tab-content hidden">
+                <ui:Label text="Database Setup" class="title"/>
+
+                <uie:ObjectField name="database-field" label="Database" type="UltimateFootballSystem.Core.FootballDatabase, Assembly-CSharp"/>
+
+                <ui:VisualElement name="database-info" class="info-card hidden">
+                    <ui:Label text="Database Information" class="section-title"/>
+                    <ui:VisualElement class="info-row">
+                        <ui:Label text="Name:" class="info-label"/>
+                        <ui:Label name="info-name" text="-" class="info-value"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="info-row">
+                        <ui:Label text="Version:" class="info-label"/>
+                        <ui:Label name="info-version" text="-" class="info-value"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="info-row">
+                        <ui:Label text="Description:" class="info-label"/>
+                        <ui:Label name="info-description" text="-" class="info-value"/>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="info-row">
+                        <ui:Label text="Valid:" class="info-label"/>
+                        <ui:Label name="info-valid" text="-" class="info-value"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement name="statistics" class="info-card hidden">
+                    <ui:Label text="Statistics" class="section-title"/>
+                    <ui:VisualElement class="info-row">
+                        <ui:Label text="Role Definitions:" class="info-label"/>
+                        <ui:Label name="stat-roles" text="0" class="info-value"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:Button name="btn-open-asset" text="Open Database Asset" class="btn-secondary hidden"/>
+            </ui:VisualElement>
+
+            <!-- Definitions Tab Content -->
+            <ui:VisualElement name="content-definitions" class="tab-content hidden">
+                <ui:Label text="Definitions" class="title"/>
+
+                <!-- Sub-tabs for Definitions -->
+                <ui:VisualElement name="definitions-tab-bar" class="sub-tab-bar">
+                    <ui:Button name="subtab-roles" text="Roles" class="sub-tab-button sub-tab-button-active"/>
+                    <ui:Button name="subtab-formations" text="Formations" class="sub-tab-button"/>
+                </ui:VisualElement>
+
+                <!-- Roles Sub-tab -->
+                <ui:VisualElement name="subcontent-roles" class="sub-tab-content">
+                    <ui:Label text="Role Definitions" class="section-title"/>
+                    <ui:VisualElement name="roles-list" class="list-container"/>
+                    <ui:Button name="btn-add-role" text="Add New Role Definition" class="btn-primary"/>
+                </ui:VisualElement>
+
+                <!-- Formations Sub-tab -->
+                <ui:VisualElement name="subcontent-formations" class="sub-tab-content hidden">
+                    <ui:Label text="Formation Templates" class="section-title"/>
+                    <ui:VisualElement class="help-box">
+                        <ui:Label text="Formation templates coming soon!" class="help-text"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Tools Tab Content -->
+            <ui:VisualElement name="content-tools" class="tab-content hidden">
+                <ui:Label text="Tools" class="title"/>
+
+                <!-- Sub-tabs for Tools -->
+                <ui:VisualElement name="tools-tab-bar" class="sub-tab-bar">
+                    <ui:Button name="subtab-test" text="Test" class="sub-tab-button sub-tab-button-active"/>
+                    <ui:Button name="subtab-validation" text="Validation" class="sub-tab-button"/>
+                    <ui:Button name="subtab-importexport" text="Import/Export" class="sub-tab-button"/>
+                </ui:VisualElement>
+
+                <!-- Test Sub-tab -->
+                <ui:VisualElement name="subcontent-test" class="sub-tab-content">
+                    <ui:Label text="Testing Tools" class="section-title"/>
+                    <ui:VisualElement class="help-box">
+                        <ui:Label text="Use these tools to test and verify your database integrity." class="help-text"/>
+                    </ui:VisualElement>
+                    <ui:Button name="btn-test-integrity" text="Test Database Integrity" class="btn-primary"/>
+                    <ui:Button name="btn-print-info" text="Print Database Info" class="btn-secondary"/>
+                    <ui:Button name="btn-list-roles" text="List All Role Definitions" class="btn-secondary"/>
+                </ui:VisualElement>
+
+                <!-- Validation Sub-tab -->
+                <ui:VisualElement name="subcontent-validation" class="sub-tab-content hidden">
+                    <ui:Label text="Validation" class="section-title"/>
+                    <ui:VisualElement class="help-box">
+                        <ui:Label text="Advanced validation tools coming soon!" class="help-text"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Import/Export Sub-tab -->
+                <ui:VisualElement name="subcontent-importexport" class="sub-tab-content hidden">
+                    <ui:Label text="Import/Export" class="section-title"/>
+                    <ui:VisualElement class="help-box">
+                        <ui:Label text="Import/Export tools coming soon!" class="help-text"/>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+        </ui:ScrollView>
+
+    </ui:VisualElement>
+</ui:UXML>
