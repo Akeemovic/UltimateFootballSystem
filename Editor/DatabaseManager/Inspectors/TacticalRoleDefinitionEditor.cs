@@ -2,6 +2,8 @@ using Sirenix.OdinInspector.Editor;
 using UltimateFootballSystem.Core.Tactics;
 using UltimateFootballSystem.Core.Tactics.Instructions.Individual;
 using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnPlayerHasBall;
+using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnTeamHasBall;
+using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnOppositionHasBall;
 using UnityEditor;
 using UnityEngine;
 
@@ -76,10 +78,10 @@ namespace UltimateFootballSystem.Editor.DatabaseManager.Inspectors
                     DrawOnPlayerHasBallInstructions();
                     break;
                 case 1: // On Team Has Ball
-                    EditorGUILayout.HelpBox("Coming soon...", MessageType.Info);
+                    DrawOnTeamHasBallInstructions();
                     break;
                 case 2: // On Opposition Has Ball
-                    EditorGUILayout.HelpBox("Coming soon...", MessageType.Info);
+                    DrawOnOppositionHasBallInstructions();
                     break;
             }
 
@@ -98,6 +100,37 @@ namespace UltimateFootballSystem.Editor.DatabaseManager.Inspectors
         {
             var config = _instructionConfig.onPlayerHasBall;
 
+            // Quick action buttons
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Make All Available", GUILayout.Height(22)))
+            {
+                config.holdUpBallAvailability = InstructionAvailability.Available;
+                config.wingPlayAvailability = InstructionAvailability.Available;
+                config.shootingFrequencyAvailability = InstructionAvailability.Available;
+                config.dribblingFrequencyAvailability = InstructionAvailability.Available;
+                config.crossingFrequencyAvailability = InstructionAvailability.Available;
+                config.crossDistanceAvailability = InstructionAvailability.Available;
+                config.crossTargetAvailability = InstructionAvailability.Available;
+                config.passingStyleAvailability = InstructionAvailability.Available;
+                config.creativePassingAvailability = InstructionAvailability.Available;
+                GUI.changed = true;
+            }
+            if (GUILayout.Button("Make All Unavailable", GUILayout.Height(22)))
+            {
+                config.holdUpBallAvailability = InstructionAvailability.Unavailable;
+                config.wingPlayAvailability = InstructionAvailability.Unavailable;
+                config.shootingFrequencyAvailability = InstructionAvailability.Unavailable;
+                config.dribblingFrequencyAvailability = InstructionAvailability.Unavailable;
+                config.crossingFrequencyAvailability = InstructionAvailability.Unavailable;
+                config.crossDistanceAvailability = InstructionAvailability.Unavailable;
+                config.crossTargetAvailability = InstructionAvailability.Unavailable;
+                config.passingStyleAvailability = InstructionAvailability.Unavailable;
+                config.creativePassingAvailability = InstructionAvailability.Unavailable;
+                GUI.changed = true;
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(8);
+
             DrawInstruction("Hold Up Ball", ref config.holdUpBallAvailability, ref config.holdUpBallDefault);
             DrawInstruction("Wing Play", ref config.wingPlayAvailability, ref config.wingPlayDefault);
             DrawInstruction("Shooting Frequency", ref config.shootingFrequencyAvailability, ref config.shootingFrequencyDefault);
@@ -107,6 +140,68 @@ namespace UltimateFootballSystem.Editor.DatabaseManager.Inspectors
             DrawInstruction("Cross Target", ref config.crossTargetAvailability, ref config.crossTargetDefault);
             DrawInstruction("Passing Style", ref config.passingStyleAvailability, ref config.passingStyleDefault);
             DrawInstruction("Creative Passing", ref config.creativePassingAvailability, ref config.creativePassingDefault);
+        }
+
+        private void DrawOnTeamHasBallInstructions()
+        {
+            var config = _instructionConfig.onTeamHasBall;
+
+            // Quick action buttons
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Make All Available", GUILayout.Height(22)))
+            {
+                config.moreForwardRunsAvailability = InstructionAvailability.Available;
+                config.openChannelRunsAvailability = InstructionAvailability.Available;
+                config.mobilityAvailability = InstructionAvailability.Available;
+                config.positioningWidthAvailability = InstructionAvailability.Available;
+                GUI.changed = true;
+            }
+            if (GUILayout.Button("Make All Unavailable", GUILayout.Height(22)))
+            {
+                config.moreForwardRunsAvailability = InstructionAvailability.Unavailable;
+                config.openChannelRunsAvailability = InstructionAvailability.Unavailable;
+                config.mobilityAvailability = InstructionAvailability.Unavailable;
+                config.positioningWidthAvailability = InstructionAvailability.Unavailable;
+                GUI.changed = true;
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(8);
+
+            DrawInstruction("More Forward Runs", ref config.moreForwardRunsAvailability, ref config.moreForwardRunsDefault);
+            DrawInstruction("Open Channel Runs", ref config.openChannelRunsAvailability, ref config.openChannelRunsDefault);
+            DrawInstruction("Mobility", ref config.mobilityAvailability, ref config.mobilityDefault);
+            DrawInstruction("Positioning Width", ref config.positioningWidthAvailability, ref config.positioningWidthDefault);
+        }
+
+        private void DrawOnOppositionHasBallInstructions()
+        {
+            var config = _instructionConfig.onOppositionHasBall;
+
+            // Quick action buttons
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Make All Available", GUILayout.Height(22)))
+            {
+                config.pressingFrequencyAvailability = InstructionAvailability.Available;
+                config.pressingStyleAvailability = InstructionAvailability.Available;
+                config.tighterMarkingAvailability = InstructionAvailability.Available;
+                config.tacklingStyleAvailability = InstructionAvailability.Available;
+                GUI.changed = true;
+            }
+            if (GUILayout.Button("Make All Unavailable", GUILayout.Height(22)))
+            {
+                config.pressingFrequencyAvailability = InstructionAvailability.Unavailable;
+                config.pressingStyleAvailability = InstructionAvailability.Unavailable;
+                config.tighterMarkingAvailability = InstructionAvailability.Unavailable;
+                config.tacklingStyleAvailability = InstructionAvailability.Unavailable;
+                GUI.changed = true;
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(8);
+
+            DrawInstruction("Pressing Frequency", ref config.pressingFrequencyAvailability, ref config.pressingFrequencyDefault);
+            DrawInstruction("Pressing Style", ref config.pressingStyleAvailability, ref config.pressingStyleDefault);
+            DrawBoolInstruction("Tighter Marking", ref config.tighterMarkingAvailability, ref config.tighterMarkingDefault);
+            DrawInstruction("Tackling Style", ref config.tacklingStyleAvailability, ref config.tacklingStyleDefault);
         }
 
         private void DrawInstruction<T>(string label, ref InstructionAvailability availability, ref T defaultValue) where T : System.Enum
@@ -137,6 +232,49 @@ namespace UltimateFootballSystem.Editor.DatabaseManager.Inspectors
                 EditorGUILayout.LabelField("Default:", GUILayout.Width(50));
                 var newDefault = (T)EditorGUILayout.EnumPopup(defaultValue);
                 if (!newDefault.Equals(defaultValue))
+                {
+                    defaultValue = newDefault;
+                    GUI.changed = true;
+                }
+            }
+            else
+            {
+                // Add space so the layout is consistent
+                GUILayout.FlexibleSpace();
+            }
+
+            EditorGUILayout.EndHorizontal();
+            GUILayout.Space(2);
+        }
+
+        private void DrawBoolInstruction(string label, ref InstructionAvailability availability, ref bool defaultValue)
+        {
+            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+
+            // Color indicator
+            var color = GetAvailabilityColor(availability);
+            var colorRect = GUILayoutUtility.GetRect(4, EditorGUIUtility.singleLineHeight, GUILayout.ExpandHeight(true));
+            EditorGUI.DrawRect(colorRect, color);
+
+            GUILayout.Space(4);
+
+            // Label (fixed width)
+            EditorGUILayout.LabelField(label, EditorStyles.boldLabel, GUILayout.Width(140));
+
+            // Availability dropdown
+            var newAvailability = (InstructionAvailability)EditorGUILayout.EnumPopup(availability, GUILayout.Width(100));
+            if (newAvailability != availability)
+            {
+                availability = newAvailability;
+                GUI.changed = true;
+            }
+
+            // Default value (only shown if Available or Required)
+            if (availability != InstructionAvailability.Unavailable)
+            {
+                EditorGUILayout.LabelField("Default:", GUILayout.Width(50));
+                var newDefault = EditorGUILayout.Toggle(defaultValue);
+                if (newDefault != defaultValue)
                 {
                     defaultValue = newDefault;
                     GUI.changed = true;

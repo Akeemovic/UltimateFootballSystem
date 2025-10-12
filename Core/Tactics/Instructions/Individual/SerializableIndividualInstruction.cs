@@ -1,5 +1,7 @@
 using System;
 using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnPlayerHasBall;
+using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnTeamHasBall;
+using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnOppositionHasBall;
 
 namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
 {
@@ -20,9 +22,8 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
     public class SerializableIndividualInstruction
     {
         public SerializableOnPlayerHasBall onPlayerHasBall = new SerializableOnPlayerHasBall();
-        // Future: Add OnTeamHasBall and OnOppositionHasBall wrappers when needed
-        // public SerializableOnTeamHasBall onTeamHasBall = new SerializableOnTeamHasBall();
-        // public SerializableOnOppositionHasBall onOppositionHasBall = new SerializableOnOppositionHasBall();
+        public SerializableOnTeamHasBall onTeamHasBall = new SerializableOnTeamHasBall();
+        public SerializableOnOppositionHasBall onOppositionHasBall = new SerializableOnOppositionHasBall();
 
         /// <summary>
         /// Convert this serializable data into a runtime IndividualInstruction instance
@@ -220,6 +221,268 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
             {
                 availability = InstructionAvailability.Unavailable;
                 defaultValue = default;
+            }
+            else if (required)
+            {
+                availability = InstructionAvailability.Required;
+                defaultValue = value.Value;
+            }
+            else
+            {
+                availability = InstructionAvailability.Available;
+                defaultValue = value.Value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Serializable wrapper for OnTeamHasBall instructions
+    /// </summary>
+    [Serializable]
+    public class SerializableOnTeamHasBall
+    {
+        // More Forward Runs
+        public InstructionAvailability moreForwardRunsAvailability = InstructionAvailability.Unavailable;
+        public MoreForwardRunsOption moreForwardRunsDefault = MoreForwardRunsOption.None;
+
+        // Open Channel Runs
+        public InstructionAvailability openChannelRunsAvailability = InstructionAvailability.Unavailable;
+        public OpenChannelRunsOption openChannelRunsDefault = OpenChannelRunsOption.None;
+
+        // Mobility
+        public InstructionAvailability mobilityAvailability = InstructionAvailability.Unavailable;
+        public MobilityOption mobilityDefault = MobilityOption.None;
+
+        // Positioning Width
+        public InstructionAvailability positioningWidthAvailability = InstructionAvailability.Unavailable;
+        public PositioningWidthOption positioningWidthDefault = PositioningWidthOption.None;
+
+        public void ApplyToRuntime(OnTeamHasBall.OnTeamHasBall runtime)
+        {
+            // More Forward Runs
+            ApplyInstruction(runtime, moreForwardRunsAvailability, moreForwardRunsDefault,
+                (val) => runtime.MoreForwardRuns = val,
+                (val) => runtime.SetRequiredDefault(val));
+
+            // Open Channel Runs
+            ApplyInstruction(runtime, openChannelRunsAvailability, openChannelRunsDefault,
+                (val) => runtime.OpenChannelRuns = val,
+                (val) => runtime.SetRequiredDefault(val));
+
+            // Mobility
+            ApplyInstruction(runtime, mobilityAvailability, mobilityDefault,
+                (val) => runtime.Mobility = val,
+                (val) => runtime.SetRequiredDefault(val));
+
+            // Positioning Width
+            ApplyInstruction(runtime, positioningWidthAvailability, positioningWidthDefault,
+                (val) => runtime.PositioningWidth = val,
+                (val) => runtime.SetRequiredDefault(val));
+        }
+
+        private void ApplyInstruction<T>(
+            OnTeamHasBall.OnTeamHasBall runtime,
+            InstructionAvailability availability,
+            T defaultValue,
+            Action<T?> setAvailable,
+            Action<T> setRequired) where T : struct
+        {
+            switch (availability)
+            {
+                case InstructionAvailability.Unavailable:
+                    setAvailable(null);
+                    break;
+                case InstructionAvailability.Available:
+                    setAvailable(defaultValue);
+                    break;
+                case InstructionAvailability.Required:
+                    setRequired(defaultValue);
+                    break;
+            }
+        }
+
+        public void FromRuntime(OnTeamHasBall.OnTeamHasBall runtime)
+        {
+            // More Forward Runs
+            GetInstructionState(runtime.MoreForwardRuns, runtime.MoreForwardRunsRequired,
+                out moreForwardRunsAvailability, out moreForwardRunsDefault);
+
+            // Open Channel Runs
+            GetInstructionState(runtime.OpenChannelRuns, runtime.OpenChannelRunsRequired,
+                out openChannelRunsAvailability, out openChannelRunsDefault);
+
+            // Mobility
+            GetInstructionState(runtime.Mobility, runtime.MobilityRequired,
+                out mobilityAvailability, out mobilityDefault);
+
+            // Positioning Width
+            GetInstructionState(runtime.PositioningWidth, runtime.PositioningWidthRequired,
+                out positioningWidthAvailability, out positioningWidthDefault);
+        }
+
+        private void GetInstructionState<T>(
+            T? value,
+            bool required,
+            out InstructionAvailability availability,
+            out T defaultValue) where T : struct
+        {
+            if (!value.HasValue)
+            {
+                availability = InstructionAvailability.Unavailable;
+                defaultValue = default;
+            }
+            else if (required)
+            {
+                availability = InstructionAvailability.Required;
+                defaultValue = value.Value;
+            }
+            else
+            {
+                availability = InstructionAvailability.Available;
+                defaultValue = value.Value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Serializable wrapper for OnOppositionHasBall instructions
+    /// </summary>
+    [Serializable]
+    public class SerializableOnOppositionHasBall
+    {
+        // Pressing Frequency
+        public InstructionAvailability pressingFrequencyAvailability = InstructionAvailability.Unavailable;
+        public PressingFrequencyOption pressingFrequencyDefault = PressingFrequencyOption.Balanced;
+
+        // Pressing Style
+        public InstructionAvailability pressingStyleAvailability = InstructionAvailability.Unavailable;
+        public PressingStyleOption pressingStyleDefault = PressingStyleOption.Conservative;
+
+        // Tighter Marking
+        public InstructionAvailability tighterMarkingAvailability = InstructionAvailability.Unavailable;
+        public bool tighterMarkingDefault = false;
+
+        // Tackling Style
+        public InstructionAvailability tacklingStyleAvailability = InstructionAvailability.Unavailable;
+        public TacklingStyleOption tacklingStyleDefault = TacklingStyleOption.Balanced;
+
+        public void ApplyToRuntime(OnOppositionHasBall.OnOppositionHasBall runtime)
+        {
+            // Pressing Frequency
+            ApplyInstruction(runtime, pressingFrequencyAvailability, pressingFrequencyDefault,
+                (val) => runtime.PressingFrequency = val,
+                (val) => runtime.SetRequiredDefault(val));
+
+            // Pressing Style
+            ApplyInstruction(runtime, pressingStyleAvailability, pressingStyleDefault,
+                (val) => runtime.PressingStyle = val,
+                (val) => runtime.SetRequiredDefault(val));
+
+            // Tighter Marking
+            ApplyBoolInstruction(runtime, tighterMarkingAvailability, tighterMarkingDefault,
+                (val) => runtime.TighterMarking = val,
+                (val) => runtime.SetRequiredDefaultBool(val));
+
+            // Tackling Style
+            ApplyInstruction(runtime, tacklingStyleAvailability, tacklingStyleDefault,
+                (val) => runtime.TacklingStyle = val,
+                (val) => runtime.SetRequiredDefault(val));
+        }
+
+        private void ApplyInstruction<T>(
+            OnOppositionHasBall.OnOppositionHasBall runtime,
+            InstructionAvailability availability,
+            T defaultValue,
+            Action<T?> setAvailable,
+            Action<T> setRequired) where T : struct
+        {
+            switch (availability)
+            {
+                case InstructionAvailability.Unavailable:
+                    setAvailable(null);
+                    break;
+                case InstructionAvailability.Available:
+                    setAvailable(defaultValue);
+                    break;
+                case InstructionAvailability.Required:
+                    setRequired(defaultValue);
+                    break;
+            }
+        }
+
+        private void ApplyBoolInstruction(
+            OnOppositionHasBall.OnOppositionHasBall runtime,
+            InstructionAvailability availability,
+            bool defaultValue,
+            Action<bool?> setAvailable,
+            Action<bool> setRequired)
+        {
+            switch (availability)
+            {
+                case InstructionAvailability.Unavailable:
+                    setAvailable(null);
+                    break;
+                case InstructionAvailability.Available:
+                    setAvailable(defaultValue);
+                    break;
+                case InstructionAvailability.Required:
+                    setRequired(defaultValue);
+                    break;
+            }
+        }
+
+        public void FromRuntime(OnOppositionHasBall.OnOppositionHasBall runtime)
+        {
+            // Pressing Frequency
+            GetInstructionState(runtime.PressingFrequency, runtime.PressingFrequencyRequired,
+                out pressingFrequencyAvailability, out pressingFrequencyDefault);
+
+            // Pressing Style
+            GetInstructionState(runtime.PressingStyle, runtime.PressingStyleRequired,
+                out pressingStyleAvailability, out pressingStyleDefault);
+
+            // Tighter Marking
+            GetBoolInstructionState(runtime.TighterMarking, runtime.TighterMarkingRequired,
+                out tighterMarkingAvailability, out tighterMarkingDefault);
+
+            // Tackling Style
+            GetInstructionState(runtime.TacklingStyle, runtime.TacklingStyleRequired,
+                out tacklingStyleAvailability, out tacklingStyleDefault);
+        }
+
+        private void GetInstructionState<T>(
+            T? value,
+            bool required,
+            out InstructionAvailability availability,
+            out T defaultValue) where T : struct
+        {
+            if (!value.HasValue)
+            {
+                availability = InstructionAvailability.Unavailable;
+                defaultValue = default;
+            }
+            else if (required)
+            {
+                availability = InstructionAvailability.Required;
+                defaultValue = value.Value;
+            }
+            else
+            {
+                availability = InstructionAvailability.Available;
+                defaultValue = value.Value;
+            }
+        }
+
+        private void GetBoolInstructionState(
+            bool? value,
+            bool required,
+            out InstructionAvailability availability,
+            out bool defaultValue)
+        {
+            if (!value.HasValue)
+            {
+                availability = InstructionAvailability.Unavailable;
+                defaultValue = false;
             }
             else if (required)
             {

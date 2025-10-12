@@ -231,5 +231,65 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnPlayerHa
                     throw new ArgumentException("Invalid option type.");
             }
         }
+
+        public void MakeAllAvailable()
+        {
+            HoldUpBall = HoldUpBallOption.None;
+            HoldUpBallRequired = false;
+
+            WingPlay = WingPlayOption.None;
+            WingPlayRequired = false;
+
+            ShootingFrequency = ShootingFrequencyOption.None;
+            ShootingFrequencyRequired = false;
+
+            DribblingFrequency = DribblingFrequencyOption.None;
+            DribblingFrequencyRequired = false;
+
+            CrossingFrequency = CrossingFrequencyOption.None;
+            CrossingFrequencyRequired = false;
+
+            CrossDistance = CrossDistanceOption.None;
+            CrossDistanceRequired = false;
+
+            CrossTarget = CrossTargetOption.None;
+            CrossTargetRequired = false;
+
+            PassingStyle = PassingStyleOption.None;
+            PassingStyleRequired = false;
+
+            CreativePassing = CreativePassingOption.None;
+            CreativePassingRequired = false;
+        }
+
+        public void MakeAllUnavailable()
+        {
+            HoldUpBall = null;
+            HoldUpBallRequired = false;
+
+            WingPlay = null;
+            WingPlayRequired = false;
+
+            ShootingFrequency = null;
+            ShootingFrequencyRequired = false;
+
+            DribblingFrequency = null;
+            DribblingFrequencyRequired = false;
+
+            CrossingFrequency = null;
+            CrossingFrequencyRequired = false;
+
+            CrossDistance = null;
+            CrossDistanceRequired = false;
+
+            CrossTarget = null;
+            CrossTargetRequired = false;
+
+            PassingStyle = null;
+            PassingStyleRequired = false;
+
+            CreativePassing = null;
+            CreativePassingRequired = false;
+        }
     }
 }
