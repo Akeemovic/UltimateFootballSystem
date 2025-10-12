@@ -1,7 +1,4 @@
 using System;
-using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnPlayerHasBall;
-using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnTeamHasBall;
-using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnOppositionHasBall;
 
 namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
 {
@@ -95,7 +92,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         /// <summary>
         /// Apply this configuration to a runtime OnPlayerHasBall instance
         /// </summary>
-        public void ApplyToRuntime(OnPlayerHasBall.OnPlayerHasBall runtime)
+        public void ApplyToRuntime(OnPlayerHasBall runtime)
         {
             // Hold Up Ball
             ApplyInstruction(runtime, holdUpBallAvailability, holdUpBallDefault,
@@ -144,7 +141,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         }
 
         private void ApplyInstruction<T>(
-            OnPlayerHasBall.OnPlayerHasBall runtime,
+            OnPlayerHasBall runtime,
             InstructionAvailability availability,
             T defaultValue,
             Action<T?> setAvailable,
@@ -172,7 +169,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         /// <summary>
         /// Populate this serializable data from a runtime OnPlayerHasBall instance
         /// </summary>
-        public void FromRuntime(OnPlayerHasBall.OnPlayerHasBall runtime)
+        public void FromRuntime(OnPlayerHasBall runtime)
         {
             // Hold Up Ball
             GetInstructionState(runtime.HoldUpBall, runtime.HoldUpBallRequired,
@@ -257,7 +254,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         public InstructionAvailability positioningWidthAvailability = InstructionAvailability.Unavailable;
         public PositioningWidthOption positioningWidthDefault = PositioningWidthOption.None;
 
-        public void ApplyToRuntime(OnTeamHasBall.OnTeamHasBall runtime)
+        public void ApplyToRuntime(OnTeamHasBall runtime)
         {
             // More Forward Runs
             ApplyInstruction(runtime, moreForwardRunsAvailability, moreForwardRunsDefault,
@@ -281,7 +278,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         }
 
         private void ApplyInstruction<T>(
-            OnTeamHasBall.OnTeamHasBall runtime,
+            OnTeamHasBall runtime,
             InstructionAvailability availability,
             T defaultValue,
             Action<T?> setAvailable,
@@ -301,7 +298,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
             }
         }
 
-        public void FromRuntime(OnTeamHasBall.OnTeamHasBall runtime)
+        public void FromRuntime(OnTeamHasBall runtime)
         {
             // More Forward Runs
             GetInstructionState(runtime.MoreForwardRuns, runtime.MoreForwardRunsRequired,
@@ -366,7 +363,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         public InstructionAvailability tacklingStyleAvailability = InstructionAvailability.Unavailable;
         public TacklingStyleOption tacklingStyleDefault = TacklingStyleOption.Balanced;
 
-        public void ApplyToRuntime(OnOppositionHasBall.OnOppositionHasBall runtime)
+        public void ApplyToRuntime(OnOppositionHasBall runtime)
         {
             // Pressing Frequency
             ApplyInstruction(runtime, pressingFrequencyAvailability, pressingFrequencyDefault,
@@ -390,7 +387,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         }
 
         private void ApplyInstruction<T>(
-            OnOppositionHasBall.OnOppositionHasBall runtime,
+            OnOppositionHasBall runtime,
             InstructionAvailability availability,
             T defaultValue,
             Action<T?> setAvailable,
@@ -411,7 +408,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         }
 
         private void ApplyBoolInstruction(
-            OnOppositionHasBall.OnOppositionHasBall runtime,
+            OnOppositionHasBall runtime,
             InstructionAvailability availability,
             bool defaultValue,
             Action<bool?> setAvailable,
@@ -431,7 +428,7 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
             }
         }
 
-        public void FromRuntime(OnOppositionHasBall.OnOppositionHasBall runtime)
+        public void FromRuntime(OnOppositionHasBall runtime)
         {
             // Pressing Frequency
             GetInstructionState(runtime.PressingFrequency, runtime.PressingFrequencyRequired,

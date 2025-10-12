@@ -1,9 +1,6 @@
 using Sirenix.OdinInspector.Editor;
 using UltimateFootballSystem.Core.Tactics;
 using UltimateFootballSystem.Core.Tactics.Instructions.Individual;
-using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnPlayerHasBall;
-using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnTeamHasBall;
-using UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnOppositionHasBall;
 using UnityEditor;
 using UnityEngine;
 

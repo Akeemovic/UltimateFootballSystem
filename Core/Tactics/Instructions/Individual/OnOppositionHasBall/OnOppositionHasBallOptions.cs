@@ -1,4 +1,4 @@
-namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnOppositionHasBall
+namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
 {
     public enum PressingFrequencyOption
     {

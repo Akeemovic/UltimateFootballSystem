@@ -1,6 +1,6 @@
 using System;
 
-namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnTeamHasBall
+namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
 {
     public class OnTeamHasBall
     {

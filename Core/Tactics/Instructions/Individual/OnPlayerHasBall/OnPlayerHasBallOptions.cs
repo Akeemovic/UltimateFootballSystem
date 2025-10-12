@@ -1,4 +1,4 @@
-namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual.OnPlayerHasBall
+namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
 {
     public enum HoldUpBallOption
     {

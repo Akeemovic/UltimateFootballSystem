@@ -28,19 +28,37 @@ MonoBehaviour:
     onPlayerHasBall:
       holdUpBallAvailability: 1
       holdUpBallDefault: 1
-      wingPlayAvailability: 2
+      wingPlayAvailability: 1
       wingPlayDefault: 2
-      shootingFrequencyAvailability: 0
+      shootingFrequencyAvailability: 1
       shootingFrequencyDefault: 0
-      dribblingFrequencyAvailability: 0
+      dribblingFrequencyAvailability: 1
       dribblingFrequencyDefault: 0
-      crossingFrequencyAvailability: 0
+      crossingFrequencyAvailability: 1
       crossingFrequencyDefault: 0
-      crossDistanceAvailability: 0
+      crossDistanceAvailability: 1
       crossDistanceDefault: 0
-      crossTargetAvailability: 0
+      crossTargetAvailability: 1
       crossTargetDefault: 0
-      passingStyleAvailability: 0
+      passingStyleAvailability: 1
       passingStyleDefault: 0
       creativePassingAvailability: 1
       creativePassingDefault: 2
+    onTeamHasBall:
+      moreForwardRunsAvailability: 0
+      moreForwardRunsDefault: 0
+      openChannelRunsAvailability: 0
+      openChannelRunsDefault: 0
+      mobilityAvailability: 0
+      mobilityDefault: 0
+      positioningWidthAvailability: 0
+      positioningWidthDefault: 0
+    onOppositionHasBall:
+      pressingFrequencyAvailability: 0
+      pressingFrequencyDefault: 1
+      pressingStyleAvailability: 0
+      pressingStyleDefault: 1
+      tighterMarkingAvailability: 0
+      tighterMarkingDefault: 0
+      tacklingStyleAvailability: 0
+      tacklingStyleDefault: 1

@@ -3,17 +3,17 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
     public class IndividualInstruction
     {
         private readonly TacticalPositionGroupOption _positionGroup;
-        public OnOppositionHasBall.OnOppositionHasBall OnOppositionHasBall { get; private set; }
-        public OnTeamHasBall.OnTeamHasBall OnTeamHasBall { get; private set; }
-        public OnPlayerHasBall.OnPlayerHasBall OnPlayerHasBall { get; private set; }
+        public OnOppositionHasBall OnOppositionHasBall { get; private set; }
+        public OnTeamHasBall OnTeamHasBall { get; private set; }
+        public OnPlayerHasBall OnPlayerHasBall { get; private set; }
 
         // Default constructor
         public IndividualInstruction(TacticalPositionGroupOption positionGroup)
         {
             _positionGroup = positionGroup;
-            OnOppositionHasBall = new OnOppositionHasBall.OnOppositionHasBall();
-            OnTeamHasBall = new OnTeamHasBall.OnTeamHasBall();
-            OnPlayerHasBall = new OnPlayerHasBall.OnPlayerHasBall();
+            OnOppositionHasBall = new OnOppositionHasBall();
+            OnTeamHasBall = new OnTeamHasBall();
+            OnPlayerHasBall = new OnPlayerHasBall();
 
             // Initialize position-specific instructions
             InitializePositionSpecificConfigs();
@@ -23,9 +23,9 @@ namespace UltimateFootballSystem.Core.Tactics.Instructions.Individual
         public IndividualInstruction(IndividualInstruction other)
         {
             _positionGroup = other._positionGroup;
-            OnOppositionHasBall = new OnOppositionHasBall.OnOppositionHasBall();
-            OnTeamHasBall = new OnTeamHasBall.OnTeamHasBall();
-            OnPlayerHasBall = new OnPlayerHasBall.OnPlayerHasBall();
+            OnOppositionHasBall = new OnOppositionHasBall();
+            OnTeamHasBall = new OnTeamHasBall();
+            OnPlayerHasBall = new OnPlayerHasBall();
 
             // Copy values from other instruction
             if (other != null)
